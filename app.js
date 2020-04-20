@@ -8,7 +8,7 @@ var logger = require('morgan');
 var app = express();
 
 // Passport for authentication
-var passport = require('passport');
+//var passport = require('passport');
 //var passportConfig = require('./bin/auth_config');
 
 // Route handlers
