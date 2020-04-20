@@ -9,7 +9,7 @@ var app = express();
 
 // Passport for authentication
 var passport = require('passport');
-var passportConfig = require('./bin/auth_config');
+//var passportConfig = require('./bin/auth_config');
 
 // Route handlers
 var routeIndex = require('./routes/index');
