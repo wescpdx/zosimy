@@ -10,12 +10,9 @@ const logger = require('morgan');
 const  app = express();
 
 // Database connection
-const { Client } = require('pg');
-client = new Client();
 
-(async function() {
-  await client.connect();
-})();
+
+
 
 // Passport for authentication
 //var passport = require('passport');
