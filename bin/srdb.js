@@ -9,7 +9,11 @@ log.setModule('srdb');
 
 // Connect to database
 const { Client } = require('pg');
-client = new Client();
+client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
+
 (async function() {
   try {    
     await client.connect();
