@@ -9,7 +9,7 @@ log.setModule('index');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Seven Roses', version: util.appVersion });
+  res.render('index', { title: 'Seven Roses', version: util.appVersion || '(unknown)' });
 });
 
 module.exports = router;
