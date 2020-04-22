@@ -1,8 +1,8 @@
 
 const log = require('../bin/logger');
 const V = require('voca');
-const arry = require('array-extended');
-const shortID = require('short-unique-id');
+//const arry = require('array-extended');
+//const shortID = require('short-unique-id');
 
 // Log init
 log.setModule('srdb');
