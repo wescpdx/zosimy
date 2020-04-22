@@ -1,11 +1,17 @@
-const  createError = require('http-errors');
-const  express = require('express');
-const  path = require('path');
-const  cookieParser = require('cookie-parser');
-const  logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
 // App initialization
 const  app = express();
+
+// Database connection
+const { Client } = require('pg');
+client = new Client();
+await client.connect();
+
 
 // Passport for authentication
 //var passport = require('passport');
