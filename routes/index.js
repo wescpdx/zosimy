@@ -11,7 +11,7 @@ log.setModule('index');
 router.get('/', function(req, res, next) {
   res.render('index', { 
     title: 'Seven Roses', 
-    version: 'unknown' 
+    version: util.appVersion
   });
 });
 
