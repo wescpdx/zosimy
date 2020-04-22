@@ -12,8 +12,10 @@ const  app = express();
 // Database connection
 const { Client } = require('pg');
 client = new Client();
-await client.connect();
 
+(async function() {
+  await client.connect();
+})();
 
 // Passport for authentication
 //var passport = require('passport');
