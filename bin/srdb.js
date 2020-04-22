@@ -11,7 +11,11 @@ log.setModule('srdb');
 const { Client } = require('pg');
 client = new Client();
 (async function() {
-  await client.connect();
+  try {    
+    await client.connect();
+  } catch(e) {
+    log.log('Error connection to DB:' + e.message);
+  }
 })();
 
 // Utility functions
