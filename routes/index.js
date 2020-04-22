@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const srdb = require('../bin/srdb');
+//const srdb = require('../bin/srdb');
 const log = require('../bin/logger');
 const util = require('../bin/srutils');
 
