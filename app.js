@@ -7,11 +7,6 @@ const logger = require('morgan');
 // App initialization
 const  app = express();
 
-// Database connection
-
-
-
-
 // Passport for authentication
 //var passport = require('passport');
 //var passportConfig = require('./bin/auth_config');
