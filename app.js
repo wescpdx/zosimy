@@ -1,19 +1,19 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const  createError = require('http-errors');
+const  express = require('express');
+const  path = require('path');
+const  cookieParser = require('cookie-parser');
+const  logger = require('morgan');
 
 // App initialization
-var app = express();
+const  app = express();
 
 // Passport for authentication
 //var passport = require('passport');
 //var passportConfig = require('./bin/auth_config');
 
 // Route handlers
-var routeIndex = require('./routes/index');
-var routeUsers = require('./routes/users');
+const  routeIndex = require('./routes/index');
+const  routeUsers = require('./routes/users');
 
 
 // Jade as view engine 
