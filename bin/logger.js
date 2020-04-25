@@ -33,6 +33,27 @@ const logger = {
       console.log(out);
     }
   }
+  
+  logCritical: function(msg) {
+    logger.log(msg, 1);
+  }
+  
+  logError: function(msg) {
+    logger.log(msg, 2);
+  }
+  
+  logWarning: function(msg) {
+    logger.log(msg, 3);
+  }
+  
+  logInfo: function(msg) {
+    logger.log(msg, 4);
+  }
+  
+  logVerbose: function(msg) {
+    logger.log(msg, 5);
+  }
+  
 };
 
 module.exports = logger;
