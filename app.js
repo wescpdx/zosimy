@@ -12,9 +12,8 @@ const  app = express();
 //var passportConfig = require('./bin/auth_config');
 
 // Route handlers
-const  routeIndex = require('./routes/index');
-const  routeUsers = require('./routes/users');
-
+const routeIndex = require('./routes/index');
+const routeUsers = require('./routes/users');
 
 // Jade as view engine 
 app.set('views', path.join(__dirname, 'views'));
@@ -30,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Install route handlers
 app.use('/', routeIndex);
 app.use('/users', routeUsers);
+app.use('/users', require('./routes/admin'));
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
