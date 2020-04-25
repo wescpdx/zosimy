@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Install route handlers
 app.use('/', routeIndex);
 app.use('/users', routeUsers);
-app.use('/users', require('./routes/admin'));
+app.use('/admin', require('./routes/admin'));
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
