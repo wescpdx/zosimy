@@ -1,6 +1,7 @@
 
 const log = require('../bin/logger');
 const V = require('voca');
+const pgclient = require('pg');
 //const arry = require('array-extended');
 //const shortID = require('short-unique-id');
 
