@@ -7,7 +7,7 @@ const util = require('../bin/srutils');
 // Log init
 log.setModule('admin');
 
-
+srdb.
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

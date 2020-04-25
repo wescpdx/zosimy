@@ -484,6 +484,31 @@ const srdb = {
         log.log('Error: '+err);
       });
     });
+  },
+  
+  initializeDatabase: function() {
+    log.setFunction('initializeDatabase');
+    return new Promise(function(resolve, reject) {
+      let qry;
+      log.logVerbose('Fetching auth record');
+      qry = "CREATE TABLE IF NOT EXISTS announcements (
+        announce_id SERIAL PRIMARY KEY,
+        message VARCHAR (300) NOT NULL,
+        start_date TIMESTAMP NOT NULL,
+        end_date TIMESTAMP NOT NULL
+      )";
+      log.logVerbose('Query: ' + qry);
+      pgclient.query(qry).then(
+        function(res) {
+          log.logVerbose(res[0]);
+          resolve(true);
+        }
+      ).catch(
+        function(err) {
+          log.logError('ERROR: '+err, 2);
+        }
+      )
+    });
   }
 
 };
