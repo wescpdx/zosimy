@@ -7,6 +7,8 @@ const util = require('../bin/srutils');
 // Log init
 log.setModule('admin');
 
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('admin', { 
