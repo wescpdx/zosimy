@@ -1,7 +1,6 @@
 
 const log = require('../bin/logger');
 const V = require('voca');
-const pgclient = require('pg');
 //const arry = require('array-extended');
 //const shortID = require('short-unique-id');
 
@@ -10,7 +9,7 @@ log.setModule('srdb');
 
 // Connect to database
 const { Client } = require('pg');
-client = new Client({
+pgclient = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
