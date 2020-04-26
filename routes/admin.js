@@ -7,9 +7,6 @@ const util = require('../bin/srutils');
 // Log init
 log.setModule('admin');
 
-// Init database
-srdb.initializeDatabase();
-
 /* GET */
 router.get('/', function(req, res, next) {
   res.render('admin', { 

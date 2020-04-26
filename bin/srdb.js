@@ -144,24 +144,24 @@ const srdb = {
     log.setFunction('fetchAnnounce');
     return new Promise(function(resolve, reject) {
       let qry;
-      log.log('Fetching announce message', 7);
-      qry = "SELECT message FROM user_data.messages WHERE CURRENT_DATE() >= start_date";
-      log.log('Query: '+qry, 5);
+      log.logInfo('Fetching announce message');
+      qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
+      log.logVerbose('Query: '+qry);
 
-      bqClient.query(qry).then(
+      pgclient.query(qry).then(
         function(res) {
           let rows, announces = [];
-          log.log('Executing success condition', 7);
-          log.log('res var = '+res, 8);
-          log.log('res stringify: '+JSON.stringify(res), 10);
+          log.logVerbose('Executing success condition');
+          log.logVerbose('res var = '+res);
+          log.logVerbose('res stringify: '+JSON.stringify(res));
           rows = res[0];
-          log.log('rows = '+JSON.stringify(rows), 10);
-          log.log('rows has ' + rows.length + ' rows', 9);
+          log.logVerbose('rows = '+JSON.stringify(rows));
+          log.logVerbose('rows has ' + rows.length + ' rows');
           if (rows.length > 0) {
-            log.log('Prep for loop with '+rows.length+' rows', 9);
+            log.logVerbose('Prep for loop with '+rows.length+' rows', 9);
             for (let aa=0, len = rows.length; aa < len; aa++) {
-              log.log('Reading row '+aa, 9);
-              log.log('Pushing value ' + rows[aa].message, 9);
+              log.logVerbose('Reading row '+aa, 9);
+              log.logVerbose('Pushing value ' + rows[aa].message, 9);
               announces.push(rows[aa].message);
             }
           }
@@ -169,7 +169,7 @@ const srdb = {
         }
       ).catch(
         function(err) {
-          log.log('ERROR: '+err, 2);
+          log.logError('ERROR: '+err);
         }
       )
     });
@@ -485,25 +485,6 @@ const srdb = {
       });
     });
   },
-  
-  initializeDatabase: function() {
-    log.setFunction('initializeDatabase');
-    return new Promise(function(resolve, reject) {
-      log.logVerbose('Fetching auth record');
-      let qry = "CREATE TABLE IF NOT EXISTS announcements (announce_id SERIAL PRIMARY KEY, message VARCHAR (300) NOT NULL, start_date TIMESTAMP NOT NULL, end_date TIMESTAMP NOT NULL)";
-      log.logVerbose('Query: ' + qry);
-      pgclient.query(qry).then(
-        function(res) {
-          log.logVerbose(res[0]);
-          resolve(true);
-        }
-      ).catch(
-        function(err) {
-          log.logError('ERROR: '+err, 2);
-        }
-      )
-    });
-  }
 
 };
 
