@@ -1,31 +1,31 @@
 
 const log = require('../bin/logger');
 const V = require('voca');
+const { Client } = require('pg');
+
 //const arry = require('array-extended');
 //const shortID = require('short-unique-id');
 
 // Log init
 log.setModule('srdb');
 
-// Connect to database
-const { Client } = require('pg');
-pgclient = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
-
-(async function() {
-  try {    
-    await client.connect();
-  } catch(e) {
-    log.log('Error connection to DB:' + e.message);
+// Private methods
+const _srdb = {
+  getGuid = function() {
+    return (new Date().getTime()) + '-' + 'fake-guid';
+  },
+  dbClient: new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  }),
+  dbConnect: async function() {
+    try {    
+      await client.connect();
+    } catch(e) {
+      log.logError('Error connection to DB:' + e.message);
+    }
   }
-})();
-
-// Utility functions
-const getGuid = function() {
-  return (new Date().getTime()) + '-' + 'fake-guid';
-};
+}
 
 // Validation functions
 const valid = {
@@ -85,8 +85,8 @@ const valid = {
   }
 };
 
-const srdb = {
-
+// Public methods
+const forExport = {
   addUser: function(u) {
     log.setFunction('addUser');
     return new Promise(function(resolve, reject) {
@@ -140,39 +140,24 @@ const srdb = {
     });
   },
 
-  fetchAnnounce: function(usr) {
+  fetchAnnounce: async function() {
     log.setFunction('fetchAnnounce');
-    return new Promise(function(resolve, reject) {
-      let qry;
-      log.logInfo('Fetching announce message');
-      qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
-      log.logVerbose('Query: '+qry);
-
-      pgclient.query(qry).then(
-        function(res) {
-          let rows, announces = [];
-          log.logVerbose('Executing success condition');
-          log.logVerbose('res var = '+res);
-          log.logVerbose('res stringify: '+JSON.stringify(res));
-          rows = res[0];
-          log.logVerbose('rows = '+JSON.stringify(rows));
-          log.logVerbose('rows has ' + rows.length + ' rows');
-          if (rows.length > 0) {
-            log.logVerbose('Prep for loop with '+rows.length+' rows', 9);
-            for (let aa=0, len = rows.length; aa < len; aa++) {
-              log.logVerbose('Reading row '+aa, 9);
-              log.logVerbose('Pushing value ' + rows[aa].message, 9);
-              announces.push(rows[aa].message);
-            }
-          }
-          resolve(announces);
-        }
-      ).catch(
-        function(err) {
-          log.logError('ERROR: '+err);
-        }
-      )
-    });
+    let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
+    log.logVerbose('Query for announcements: '+qry);
+    try {
+      let result = await pgclient.query(qry);
+    } catch(e) {
+      log.logError('Error querying database - ' + qry + ' || ' + e.error);
+      return ['Error fetching announcements'];
+    }
+    let rows = result[0];
+    let announces = [];
+    if (rows.length > 0) {
+      for (let i = 0, l = rows.length; i < l, i++) {
+        announces.push(rows[i].message);
+      }
+    }
+    return announces;
   },
 
   fetchTopic: function(topic, usr) {
@@ -488,4 +473,4 @@ const srdb = {
 
 };
 
-module.exports = srdb;
+module.exports = forExport;
