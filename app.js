@@ -11,10 +11,6 @@ const  app = express();
 //var passport = require('passport');
 //var passportConfig = require('./bin/auth_config');
 
-// Route handlers
-const routeIndex = require('./routes/index');
-const routeUsers = require('./routes/users');
-
 // Jade as view engine 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -26,11 +22,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Install route handlers
-app.use('/', routeIndex);
-app.use('/users', routeUsers);
+// Route handlers
+app.use('/', require('./routes/index'));
+app.use('/users', require('./routes/users'));
 app.use('/admin', require('./routes/admin'));
 app.use('/privacy', require('./routes/privacy'));
+app.use('/tos', require('./routes/tos'));
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
