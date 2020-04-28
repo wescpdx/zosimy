@@ -1,0 +1,14 @@
+extends layout
+block content
+  h1= title
+  if articles
+    p Information known to the Storyteller about "#{title}":
+    each art in articles
+      .articlecontainer
+        .article #{art.content}
+
+        each key in art.keyword
+         .matches #{key}
+        a(href='/topic/edit/'+art.guid) EDIT
+  else
+    p There is no information available on '#{topic}'

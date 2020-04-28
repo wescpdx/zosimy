@@ -29,10 +29,9 @@ router.get('/google', passport.authenticate('google', { scope: ['profile'] }), f
   res.send('Google auth page');
 });
 
-router.get('/google/callback', passport.authenticate('google', {
-  successRedirect: '/topic',
-  failureRedirect: '/auth?auth=failed'
-}));
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth?auth=failed' }), function(req, res) {
+  res.redirect('/topic');
+});
 
 router.get('/logout', function(req, res) {
   log.setFunction('GET /logout');

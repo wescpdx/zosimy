@@ -1,0 +1,13 @@
+extends layout
+block content
+  h1= title
+  if articles
+    p Information known to #{charname} about "#{title}":
+    each art in articles
+      .articlecontainer
+        .article #{art.content}
+
+        each key in art.keyword
+         .matches #{key}
+  else
+    p There is no information available on '#{topic}'
