@@ -16,6 +16,7 @@ const _srdb = {
   },
   pg: async function(qry) {
     try {
+      log.setFunction('_srdb.pg');
       let client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false }
@@ -100,6 +101,7 @@ const forExport = {
     try {
       result = await _srdb.pg(qry);
       log.logVerbose('Query for announcements complete');
+      log.logVerbose('Outcome: ' + result);
     } catch(e) {
       log.logError('Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
