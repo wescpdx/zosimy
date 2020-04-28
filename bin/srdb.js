@@ -92,7 +92,7 @@ const valid = {
 const forExport = {
   
   fetchAnnounce: async function() {
-    let qry = "SELECT message FROM announcements WHERE NOW() BETWEEN start_date AND end_date"; 
+    let qry = "SELECT message FROM announcements WHERE (NOW() >= start_date OR start_date IS NULL) AND (end_date IS NULL OR NOW() < end_date"; 
     let result = [];
     try {
       result = await _srdb.pg(qry);
