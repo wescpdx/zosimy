@@ -90,8 +90,9 @@ const valid = {
 
 // Public methods
 const forExport = {
+  
   fetchAnnounce: async function() {
-    let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date"; 
+    let qry = "SELECT message FROM announcements WHERE NOW() >= start_date AND NOW() >= end_date"; 
     let result = [];
     try {
       result = await _srdb.pg(qry);
