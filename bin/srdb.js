@@ -11,7 +11,7 @@ log.setModule('srdb');
 
 // Private methods
 const _srdb = {
-  getGuid = function() {
+  getGuid: function() {
     return (new Date().getTime()) + '-' + 'fake-guid';
   },
   dbClient: new Client({
