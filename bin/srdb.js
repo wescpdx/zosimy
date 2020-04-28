@@ -96,7 +96,7 @@ const valid = {
 const forExport = {
   fetchAnnounce: async function() {
     log.setFunction('fetchAnnounce');
-    let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
+    let qry = "SELECT message FROM announcements "; // WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date
     log.logVerbose('Query for announcements: '+qry);
     let result = '';
     try {
