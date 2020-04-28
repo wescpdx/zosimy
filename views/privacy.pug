@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 Privacy Policy
+  p We collect only the data we need to manage a login system, and don't transfer it to anyone except as needed to upload to web hosts and such to make the site(s) go.
+
+  each ann in announce
+    p Announcements:
+      .article #{ann}
+  
