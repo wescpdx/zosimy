@@ -92,7 +92,8 @@ const valid = {
 const forExport = {
   
   fetchAnnounce: async function() {
-    let qry = "SELECT message FROM announcements WHERE (NOW() >= start_date OR start_date IS NULL) AND (end_date IS NULL OR NOW() < end_date)"; 
+    let qry = "SELECT message FROM announcements " +
+        "WHERE (NOW() >= start_date OR start_date IS NULL) AND (end_date IS NULL OR NOW() < end_date)"; 
     let result = [];
     try {
       result = await _srdb.pg(qry);
@@ -109,6 +110,44 @@ const forExport = {
       }
     }
     return announces;
+  },
+  
+  fetchUserByAuth: async function(provider, key) {
+    let qry = "SELECT u.guid, u.player_name, u.email, u.char_name, u.active, u.admin " +
+        "FROM user_data.user_auth ua " +
+        "JOIN user_data.users u ON ua.guid = u.guid " +
+        "WHERE ua.provider = '" + provider + "' AND ua.prkey = '" + key + "'";
+    let result = [];
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('fetchUserByAuth: Received ' + result.rows.length + ' rows');
+    } catch(e) {
+      log.logError('fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
+      return null;
+    }
+    let rows = result.rows;
+    if (rows.length === 0) {
+      log.logInfo('Approving new user creation');
+      u = {
+        new: true,
+        guid: 'new',
+        provider: provider,
+        pkey: key
+      };
+    } else if (rows.length === 1) {
+      log.logInfo('Found user: ' + rows[0].player_name);
+      u = {
+        uid: rows[0].guid,
+        playername: rows[0].player_name,
+        charname: rows[0].char_name,
+        email: rows[0].email,
+        active: rows[0].active,
+        admin: rows[0].admin
+      };
+    } else {
+      log.logError('ERROR - Duplicate auth record');
+      throw('Duplicate auth record ' + provider + '//' + key + ' Found in user_data.users');
+    }
   },
   
   addUser: function(u) {
@@ -427,53 +466,7 @@ const forExport = {
     });
   },
 
-  fetchUserByAuth: function(provider, key) {
-    log.setFunction('fetchUserByAuth');
-    return new Promise(function(resolve, reject) {
-      let qry;
-      log.log('Fetching auth record', 7);
-      qry = "SELECT u.guid, u.player_name, u.email, u.char_name, u.active, u.admin " +
-        "FROM user_data.user_auth ua " +
-        "JOIN user_data.users u ON ua.guid = u.guid " +
-        "WHERE ua.provider = '" + provider + "' AND ua.prkey = '" + key + "'";
-      log.log('qry = ' + qry, 10);
-      bqClient.query(qry).then(function(res) {
-        log.log('Executing query', 7);
-        log.log(' res stringify: '+JSON.stringify(res), 10);
-        let rows = res[0];
-        log.log('res stringify: '+JSON.stringify(res), 10);
-        log.log('rows has ' + rows.length + ' rows', 9);
-        if (rows.length === 0) {
-          log.log('Approving new user creation', 2);
-          u = {
-            new: true,
-            guid: 'new',
-            provider: provider,
-            pkey: key
-          };
-        } else if (rows.length === 1) {
-          log.log('Found user: ' + rows[0].player_name, 9);
-          u = {
-            uid: rows[0].guid,
-            playername: rows[0].player_name,
-            charname: rows[0].char_name,
-            email: rows[0].email,
-            active: rows[0].active,
-            admin: rows[0].admin
-          };
-        } else {
-          log.log('ERROR - Duplicate auth record', 1);
-          throw('Duplicate auth record ' + provider + '//' + key + ' Found in user_data.users');
-        }
-        log.log('Ready to resolve', 8);
-        log.log('u = ' + JSON.stringify(u), 10);
-        resolve(u);
-      }).catch(function(err) {
-        log.log('Executing failure condition', 7);
-        log.log('Error: '+err);
-      });
-    });
-  },
+
 
 };
 

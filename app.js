@@ -2,21 +2,21 @@ const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const srdb = require('../bin/srdb');
 const log = require('./bin/logger');
 
 // App initialization
 const  app = express();
 
 // Passport for authentication
-var passport = require('passport');
-var StrategyGoogle = require('passport-google-oauth20').Strategy;
+const passport = require('passport');
+const StrategyGoogle = require('passport-google-oauth20').Strategy;
 
 // PUG as view engine 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // Middleware
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -35,7 +35,7 @@ passport.use(new StrategyGoogle(
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function() {
       log.logInfo('Trying to authorize Google ID ' + profile.id);
-      var authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
+      let authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
         log.logVerbose('Executing passport callback via promise', 9);
         log.logVerbose('u = ' + uid, 10);
         log.logVerbose('u.guid = ' + uid, 10);
