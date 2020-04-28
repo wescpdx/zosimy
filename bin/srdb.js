@@ -11,24 +11,26 @@ log.setModule('srdb');
 
 // Private methods
 const _srdb = {
-  isConnected: false,
   getGuid: function() {
     return (new Date().getTime()) + '-' + 'fake-guid';
   },
-  pg: new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-  }),
-  dbConnect: async function() {
-    try {    
+  pg: async function(qry) {
+    try {
+      let client = new Client({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+      });
       await client.connect();
       log.logInfo('Connected to database');
+      let result = await client.query(qry);
+      client.end();
+      return result;
     } catch(e) {
-      log.logError('Error connection to DB:' + e.message);
+      log.logError('Error connecting to DB:' + e.message);
       log.logError('process.env.DATABASE_URL = ' + process.env.DATABASE_URL);
     }
-  }
-}
+  },
+};
 
 // Validation functions
 const valid = {
@@ -94,8 +96,9 @@ const forExport = {
     log.setFunction('fetchAnnounce');
     let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
     log.logVerbose('Query for announcements: '+qry);
+    let result = '';
     try {
-      let result = await _srdb.pg.query(qry);
+      result = await _srdb.pg(qry);
       log.logVerbose('Query for announcements complete');
     } catch(e) {
       log.logError('Error querying database - ' + qry + ' || ' + e.message);
