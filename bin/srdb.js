@@ -145,7 +145,7 @@ const forExport = {
     let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
     log.logVerbose('Query for announcements: '+qry);
     try {
-      let result = await pgclient.query(qry);
+      let result = await _srdb.dbClient.query(qry);
     } catch(e) {
       log.logError('Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
