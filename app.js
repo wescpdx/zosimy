@@ -8,8 +8,8 @@ const logger = require('morgan');
 const  app = express();
 
 // Passport for authentication
-//var passport = require('passport');
-//var passportConfig = require('./bin/auth_config');
+var passport = require('passport');
+var StrategyGoogle = require('passport-google-oauth20').Strategy;
 
 // Jade as view engine 
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +21,29 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new StrategyGoogle(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: 'https://seven-roses.herokuapp.com/auth/google/callback'
+  },
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function() {
+      log.logInfo('Trying to authorize Google ID ' + profile.id);
+      var authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
+        log.logVerbose('Executing passport callback via promise', 9);
+        log.logVerbose('u = ' + uid, 10);
+        log.logVerbose('u.guid = ' + uid, 10);
+        return done(null, uid);
+      });
+    });
+  }
+));
 
 // Route handlers
 app.use('/', require('./routes/index'));
