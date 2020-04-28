@@ -28,6 +28,7 @@ const _srdb = {
       log.logError('process.env.DATABASE_URL = ' + process.env.DATABASE_URL);
     }
   }
+}
 
 // Validation functions
 const valid = {
