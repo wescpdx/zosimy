@@ -101,6 +101,7 @@ const forExport = {
       result = await _srdb.pg(qry);
       log.logVerbose('fetchAnnounce: Query for announcements complete');
       log.logVerbose('fetchAnnounce: Fetched ' + result.length + ' rows');
+      log.logVerbose('fetchAnnounce: Result is of type ' + typeof result);
     } catch(e) {
       log.logError('fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
