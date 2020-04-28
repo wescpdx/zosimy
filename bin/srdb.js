@@ -24,6 +24,7 @@ const _srdb = {
       await client.connect();
       log.logInfo('Connected to database');
       let result = await client.query(qry);
+      log.logVerbose('Internal result = ' + result);
       client.end();
       return result;
     } catch(e) {
