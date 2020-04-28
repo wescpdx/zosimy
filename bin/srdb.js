@@ -27,11 +27,7 @@ const _srdb = {
       log.logError('Error connection to DB:' + e.message);
       log.logError('process.env.DATABASE_URL = ' + process.env.DATABASE_URL);
     }
-  },
-  dbSendQuery: async function() {
-    try {
-      await 
-}
+  }
 
 // Validation functions
 const valid = {
