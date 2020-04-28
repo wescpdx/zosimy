@@ -100,7 +100,7 @@ const forExport = {
     let result = [];
     try {
       result = await _srdb.pg(qry);
-      log.logVerbose('fetchAnnounce: Received ' + result.length + ' rows');
+      log.logVerbose('fetchAnnounce: Received ' + result.rows.length + ' rows');
     } catch(e) {
       log.logError('fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
