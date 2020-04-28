@@ -6,9 +6,6 @@ const { Client } = require('pg');
 //const arry = require('array-extended');
 //const shortID = require('short-unique-id');
 
-// Log init
-log.setModule('srdb');
-
 // Private methods
 const _srdb = {
   getGuid: function() {
@@ -29,7 +26,6 @@ const _srdb = {
       return result;
     } catch(e) {
       log.logError('Error connecting to DB:' + e.message);
-      log.logError('process.env.DATABASE_URL = ' + process.env.DATABASE_URL);
     }
   },
 };
@@ -95,15 +91,14 @@ const valid = {
 // Public methods
 const forExport = {
   fetchAnnounce: async function() {
-    let qry = "SELECT message FROM announcements "; // WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date
-    log.logVerbose('fetchAnnounce: Query for announcements: '+qry);
+    let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date"; 
     let result = [];
     try {
       result = await _srdb.pg(qry);
       log.logVerbose('fetchAnnounce: Received ' + result.rows.length + ' rows');
     } catch(e) {
       log.logError('fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
-      return ['Error fetching announcements'];
+      return ['We ran into an error while fetching announcements. Sorry.'];
     }
     let rows = result.rows;
     let announces = [];

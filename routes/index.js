@@ -11,9 +11,6 @@ log.setModule('index');
 router.get('/', function(req, res, next) {
   log.setFunction('GET /');
   var announcement = srdb.fetchAnnounce(null).then(function(rows){
-    log.logVerbose('fetchAnnounce then clause');
-    log.logVerbose('rows.length = ' + rows.length);
-    log.logVerbose('rows = ' + JSON.stringify(rows));
     res.render('index', { title: 'Seven Roses', announce: rows, version: util.appVersion });
   });
 });
