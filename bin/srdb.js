@@ -23,6 +23,7 @@ const _srdb = {
       await client.connect();
     } catch(e) {
       log.logError('Error connection to DB:' + e.message);
+      log.logError('process.env.DATABASE_URL = ' + process.env.DATABASE_URL);
     }
   }
 }
