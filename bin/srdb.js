@@ -153,7 +153,7 @@ const forExport = {
     let rows = result[0];
     let announces = [];
     if (rows.length > 0) {
-      for (let i = 0, l = rows.length; i < l, i++) {
+      for (let i = 0, l = rows.length, i < l, i++) {
         announces.push(rows[i].message);
       }
     }
