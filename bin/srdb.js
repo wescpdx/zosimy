@@ -24,6 +24,8 @@ const _srdb = {
       log.logInfo('pg: Connected to database');
       let result = await client.query(qry);
       log.logVerbose('pg: Fetched ' + result.length + ' rows');
+      log.logVerbose('pg: Result is of type ' + typeof result);
+      log.logVerbose('pg: Is result an array? ' + result.isArray());
       client.end();
       return result;
     } catch(e) {
@@ -101,7 +103,6 @@ const forExport = {
       result = await _srdb.pg(qry);
       log.logVerbose('fetchAnnounce: Query for announcements complete');
       log.logVerbose('fetchAnnounce: Fetched ' + result.length + ' rows');
-      log.logVerbose('fetchAnnounce: Result is of type ' + typeof result);
     } catch(e) {
       log.logError('fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
