@@ -25,7 +25,7 @@ const _srdb = {
       let result = await client.query(qry);
       log.logVerbose('pg: Fetched ' + result.length + ' rows');
       log.logVerbose('pg: Result is of type ' + typeof result);
-      log.logVerbose('pg: Is result an array? ' + result.isArray());
+      log.logVerbose('pg: Is result an array? ' + Array.isArray(result));
       client.end();
       return result;
     } catch(e) {
