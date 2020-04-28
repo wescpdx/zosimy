@@ -147,7 +147,7 @@ const forExport = {
     try {
       let result = await pgclient.query(qry);
     } catch(e) {
-      log.logError('Error querying database - ' + qry + ' || ' + e.error);
+      log.logError('Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
     }
     let rows = result[0];
