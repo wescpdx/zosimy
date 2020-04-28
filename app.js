@@ -11,7 +11,7 @@ const  app = express();
 var passport = require('passport');
 var StrategyGoogle = require('passport-google-oauth20').Strategy;
 
-// Jade as view engine 
+// PUG as view engine 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -48,6 +48,10 @@ passport.use(new StrategyGoogle(
 // Route handlers
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
+app.use('/auth', require('./routes/auth'));
+//app.use('/topic', require('./routes/topic'));
+//app.use('/create', require('./routes/create'));
+app.use('/profile', require('./routes/profile'));
 app.use('/admin', require('./routes/admin'));
 app.use('/privacy', require('./routes/privacy'));
 app.use('/tos', require('./routes/tos'));
