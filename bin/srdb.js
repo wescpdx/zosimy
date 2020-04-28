@@ -11,21 +11,26 @@ log.setModule('srdb');
 
 // Private methods
 const _srdb = {
+  isConnected: false,
   getGuid: function() {
     return (new Date().getTime()) + '-' + 'fake-guid';
   },
-  dbClient: new Client({
+  pg: new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
   }),
   dbConnect: async function() {
     try {    
       await client.connect();
+      log.logInfo('Connected to database');
     } catch(e) {
       log.logError('Error connection to DB:' + e.message);
       log.logError('process.env.DATABASE_URL = ' + process.env.DATABASE_URL);
     }
-  }
+  },
+  dbSendQuery: async function() {
+    try {
+      await 
 }
 
 // Validation functions
@@ -88,6 +93,27 @@ const valid = {
 
 // Public methods
 const forExport = {
+  fetchAnnounce: async function() {
+    log.setFunction('fetchAnnounce');
+    let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
+    log.logVerbose('Query for announcements: '+qry);
+    try {
+      let result = await _srdb.pg.query(qry);
+      log.logVerbose('Query for announcements complete');
+    } catch(e) {
+      log.logError('Error querying database - ' + qry + ' || ' + e.message);
+      return ['Error fetching announcements'];
+    }
+    let rows = result[0];
+    let announces = [];
+    if (rows.length > 0) {
+      for (let i = 0, l = rows.length; i < l; i++) {
+        announces.push(rows[i].message);
+      }
+    }
+    return announces;
+  },
+  
   addUser: function(u) {
     log.setFunction('addUser');
     return new Promise(function(resolve, reject) {
@@ -139,26 +165,6 @@ const forExport = {
         }
       )
     });
-  },
-
-  fetchAnnounce: async function() {
-    log.setFunction('fetchAnnounce');
-    let qry = "SELECT message FROM announcements WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date";
-    log.logVerbose('Query for announcements: '+qry);
-    try {
-      let result = await _srdb.dbClient.query(qry);
-    } catch(e) {
-      log.logError('Error querying database - ' + qry + ' || ' + e.message);
-      return ['Error fetching announcements'];
-    }
-    let rows = result[0];
-    let announces = [];
-    if (rows.length > 0) {
-      for (let i = 0, l = rows.length; i < l; i++) {
-        announces.push(rows[i].message);
-      }
-    }
-    return announces;
   },
 
   fetchTopic: function(topic, usr) {
