@@ -25,13 +25,13 @@ router.get('/facebook/callback', passport.authenticate('facebook', {
   failureRedirect: '/auth?auth=fail'
 }));
 
-router.get('/google', passport.authenticate('google'), function(req, res) {
+router.get('/google', passport.authenticate('google', { scope: ['profile'] }), function(req, res) {
   res.send('Google auth page');
 });
 
 router.get('/google/callback', passport.authenticate('google', {
   successRedirect: '/topic',
-  failureRedirect: '/auth?auth=fail'
+  failureRedirect: '/auth?auth=failed'
 }));
 
 router.get('/logout', function(req, res) {
