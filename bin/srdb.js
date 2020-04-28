@@ -16,15 +16,14 @@ const _srdb = {
   },
   pg: async function(qry) {
     try {
-      log.setFunction('_srdb.pg');
       let client = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false }
       });
       await client.connect();
-      log.logInfo('Connected to database');
+      log.logInfo('pg: Connected to database');
       let result = await client.query(qry);
-      log.logVerbose('Internal result = ' + result);
+      log.logVerbose('pg: Fetched ' + result.length + ' rows');
       client.end();
       return result;
     } catch(e) {
@@ -95,16 +94,15 @@ const valid = {
 // Public methods
 const forExport = {
   fetchAnnounce: async function() {
-    log.setFunction('fetchAnnounce');
     let qry = "SELECT message FROM announcements "; // WHERE CURRENT_DATE() >= start_date AND CURRENT_DATE() >= end_date
-    log.logVerbose('Query for announcements: '+qry);
-    let result = '';
+    log.logVerbose('fetchAnnounce: Query for announcements: '+qry);
+    let result = [];
     try {
       result = await _srdb.pg(qry);
-      log.logVerbose('Query for announcements complete');
-      log.logVerbose('Outcome: ' + result);
+      log.logVerbose('fetchAnnounce: Query for announcements complete');
+      log.logVerbose('fetchAnnounce: Fetched ' + result.length + ' rows');
     } catch(e) {
-      log.logError('Error querying database - ' + qry + ' || ' + e.message);
+      log.logError('fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
       return ['Error fetching announcements'];
     }
     let rows = result[0];
