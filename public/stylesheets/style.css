@@ -1,8 +1,27 @@
 body {
-  padding: 50px;
+  padding: 10px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.articlecontainer {
+  width: 80%;
+  margin-top: 20px
+}
+
+.article {
+  border: 3px solid #a1a1a1;
+  padding: 5px 15px;
+  background: #eeeeee;
+  border-radius: 10px;
+}
+
+.matches {
+  float: right;
+  color: red;
+  font-size: 0.8em;
+  margin-right: 10px;
 }
