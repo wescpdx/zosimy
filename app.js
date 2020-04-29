@@ -1,7 +1,7 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const srdb = require('./bin/srdb');
 const log = require('./bin/logger');
 
@@ -19,8 +19,15 @@ app.set('view engine', 'pug');
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Session storage
+app.use(session({
+  store: new (require('connect-pg-simple')(session))(),
+  secret: process.env.SESSION_COOKIE_SECRET,
+  resave: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+}));
 
 // Passport configuration
 app.use(passport.initialize());
