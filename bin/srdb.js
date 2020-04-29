@@ -72,7 +72,7 @@ const valid = {
     out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"').value();
     log.logVerbose('srdb.valid.sqlString: Transform 1: ' + out);
     if (V(out).latinise().value().match(/[^a-zA-Z0-9_'"\\\@-]/)) {
-      log.logWarning('srdb.valid.sqlString: Invalid characters');
+      log.logWarning('srdb.valid.sqlString: Invalid characters in ' + V(out).latinise().value().match(/[^a-zA-Z0-9_'"\\\@-]/));
       return '';
     }
     log.logVerbose('srdb.valid.sqlString: Validated');
@@ -148,15 +148,15 @@ const forExport = {
   addUser: async function(u) {
     u.playername = valid.sqlString(u.playername);
     if (!u.playername) {
-      throw('Invalid player name: ' + u.playername);
+      throw(new Error('Invalid player name: ' + u.playername));
     }
     u.charname = valid.sqlString(u.charname);
     if (!u.charname) {
-      throw('Invalid character name: ' + u.charname);
+      throw(new Error('Invalid character name: ' + u.charname));
     }
     u.email = valid.sqlString(u.email);
     if (!u.email ) {
-      throw('Invalid email: ' + u.email);
+      throw(new Error('Invalid email: ' + u.email));
     }
     
     // Create user record
