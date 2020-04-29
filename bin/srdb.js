@@ -68,7 +68,7 @@ const valid = {
   },
 
   sqlString: function(str) {
-    const esc = '\';
+    const esc = '\\';
     let out = str;
     if (!out) {
       log.logWarning('sqlString: Falsy value - aborting');
