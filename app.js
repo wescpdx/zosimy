@@ -43,8 +43,8 @@ passport.use(new StrategyGoogle(
     process.nextTick(function() {
       log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
       let authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
-        log.logVerbose('app.passport: u = ' + uid, 10);
-        log.logVerbose('app.passport: u.guid = ' + uid, 10);
+        log.logVerbose('app.passport: u = ' + JSON.stringify(uid));
+        log.logVerbose('app.passport: u.id = ' + JSON.stringify(uid));
         return done(null, uid);
       });
     });
@@ -55,8 +55,8 @@ passport.use(new StrategyGoogle(
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
 app.use('/auth', require('./routes/auth'));
-//app.use('/topic', require('./routes/topic'));
-//app.use('/create', require('./routes/create'));
+app.use('/topic', require('./routes/topic'));
+app.use('/create', require('./routes/createuser'));
 app.use('/profile', require('./routes/profile'));
 app.use('/admin', require('./routes/admin'));
 app.use('/privacy', require('./routes/privacy'));
