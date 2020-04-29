@@ -177,7 +177,7 @@ const forExport = {
     
     // Create user auth record
     log.logVerbose('srdb.addUser: Ready to create user auth');
-    qry = "INSERT INTO user_auth (user_id, provider, prkey) " +
+    qry = "INSERT INTO user_auth (user_id, provider, key) " +
         "VALUES ('" + newUserId + "', '" + u.provider + "', '" + u.key + "')";
     log.logVerbose('srdb.addUser: qry = ' + qry);
     try {
