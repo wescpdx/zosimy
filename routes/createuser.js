@@ -41,7 +41,7 @@ router.post('/confirm', function(req, res) {
       log.logVerbose('createuser: User added, bouncing to /topic');
       res.redirect('/topic');
     }).catch(function(err) {
-      log.logError('createuser: Error adding user: '+err.message, 8);
+      log.logError('createuser: Error adding user: '+err.message);
       res.send('Error adding user: '+err.message);
     });
   }

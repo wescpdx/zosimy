@@ -39,13 +39,11 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.path: Validating: ' + out);
-    out = out.toLowerCase();
+    out = V(out).toLowerCase().replaceAll('%20', '_').replaceAll(' ', '_').replaceAll('+', '_').latinise().trim().value();
     log.logVerbose('srdb.valid.path: Transform 1: ' + out);
-    out = S(out).replaceAll('%20', '_').replaceAll(' ', '_').replaceAll('+', '_').latinise().trim();
-    log.logVerbose('srdb.valid.path: Transform 2: ' + out);
     if (out.match(/[^a-z0-9_-]/)) {
       log.logInfo('srdb.valid.path: Invalid characters');
-      return false;
+      return '';
     }
     log.logVerbose('srdb.valid.path: Validated');
     return out;
@@ -58,10 +56,8 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.sqlText: Validating: ' + out);
-    out = S(out).trim();
+    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"').value();
     log.logVerbose('srdb.valid.sqlText: Transform 1: ' + out);
-    out = S(out).replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
-    log.logVerbose('srdb.valid.sqlText: Transform 2: ' + out);
     return out;
   },
 
@@ -73,15 +69,13 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.sqlString: Validating: ' + out);
+    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
+    log.logVerbose('srdb.valid.sqlString: Transform 1: ' + out);
     if (V(out).latinise().s.match(/[^a-zA-Z0-9_'"\\-]/)) {
       log.logWarning('srdb.valid.sqlString: Invalid characters');
-      return false;
+      return '';
     }
     log.logVerbose('srdb.valid.sqlString: Validated');
-    out = S(out).trim();
-    log.logVerbose('srdb.valid.sqlString: Transform 1: ' + out);
-    out = S(out).replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
-    log.logVerbose('srdb.valid.sqlString: Transform 2: ' + out);
     return out;
   }
 };
@@ -152,57 +146,49 @@ const forExport = {
   },
   
   addUser: function(u) {
+    u.playername = valid.sqlString(u.playername;
+    if (!u.playername) {
+      throw('Invalid player name: ' + u.playername);
+    }
+    u.charname = valid.sqlString(u.charname);
+    if (!u.charname) {
+      throw('Invalid character name: ' + u.charname);
+    }
+    u.email = valid.sqlString(u.email)
+    if (!u.email ) {
+      throw('Invalid email: ' + u.email);
+    }
     
-
-    return new Promise(function(resolve, reject) {
-      // Input validation
-      if (valid.sqlString(u.playername)) {
-        u.playername = valid.sqlString(u.playername);
-      } else {
-        throw('Invalid player name: ' + u.playername);
-      }
-      if (valid.sqlString(u.charname)) {
-        u.charname = valid.sqlString(u.charname);
-      } else {
-        throw('Invalid character name: ' + u.charname);
-      }
-      if (email = valid.sqlString(u.email)) {
-        u.email = valid.sqlString(u.email);
-      } else {
-        throw('Invalid email: ' + u.email);
-      }
-
-      // Create user record
-      log.logVerbose('srdb.addUser: Making guid');
-      let usrid = getGuid();
-      log.logVerbose('srdb.addUser: usrid = ' + usrid);
-      let qry = "INSERT INTO user_data.users (guid, player_name, char_name, email, active, admin) " +
-        "VALUES ('" + usrid + "','" + u.playername + "','" + u.charname + "','" + u.email + "', false, false) ";
-      log.logVerbose('srdb.addUser: qry = ' + qry);
-      bqClient.query(qry).then(function(res) {
-        log.logInfo('srdb.addUser: Executing user insert');
-        log.logVerbose('srdb.addUser: res stringify: '+JSON.stringify(res));
-        resolve(true);
-      }).then(
-        function() {
-          // Create user auth record
-          log.logVerbose('srdb.addUser: Executing second stage');
-          let qry2 = "INSERT INTO user_data.user_auth (guid, provider, prkey) " +
-          "VALUES ('" + usrid + "', '" + u.provider + "', '" + u.key + "')";
-          bqClient.query(qry2).then(
-            function(res) {
-              log.logInfo('srdb.addUser: Executing user auth insert');
-              log.logVerbose('srdb.addUser: res stringify: '+JSON.stringify(res), 10);
-              resolve(true);
-            }
-          )
-        }
-      ).catch(
-        function(err) {
-          log.logError('srdb.addUser: Error: '+err, 3);
-        }
-      )
-    });
+    // Create user record
+    log.logVerbose('srdb.addUser: Ready to create user record');
+    let qry = "INSERT INTO users (player_name, char_name, email, active, admin) " +
+        "VALUES ('" + u.playername + "','" + u.charname + "','" + u.email + "', false, false) " +
+        "RETURNING user_id";
+    log.logVerbose('srdb.addUser: qry = ' + qry);
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.addUser: Affected ' + result.rowCount + ' rows');
+    } catch(e) {
+      log.logError('srdb.addUser: Error querying database - ' + qry + ' || ' + e.message);
+      return null;
+    }
+    if (result.rows.length !== 1) {
+      throw('srdb.addUser: User record insert did not return an ID properly');
+    }
+    let newUserId = result.rows[0].user_id;
+    
+    // Create user auth record
+    log.logVerbose('srdb.addUser: Ready to create user auth');
+    let qry = "INSERT INTO user_auth (user_id, provider, prkey) " +
+        "VALUES ('" + newUserId + "', '" + u.provider + "', '" + u.key + "')";
+    log.logVerbose('srdb.addUser: qry = ' + qry);
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.addUser: Affected ' + result.rowCount + ' rows');
+    } catch(e) {
+      log.logError('srdb.addUser: Error querying database - ' + qry + ' || ' + e.message);
+      return null;
+    }
   },
 
   fetchTopic: function(topic, usr) {

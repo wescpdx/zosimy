@@ -23,7 +23,7 @@ CREATE TABLE users (
 );
 INSERT INTO users (player_name, char_name, email, active, admin) VALUES
   ('Wes', 'Storyteller', 'wesc@antitribu.com', TRUE, TRUE);
-
+  
 
 CREATE TYPE provider AS ENUM('google');
 CREATE TABLE user_auth (
