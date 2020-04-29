@@ -150,7 +150,7 @@ const forExport = {
       throw('Duplicate auth record ' + provider + '//' + key + ' Found in users table');
     }
     log.logVerbose('u = ' + JSON.stringify(u));
-    resolve(u);
+    return u;
   },
   
   addUser: function(u) {
