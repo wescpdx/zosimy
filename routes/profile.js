@@ -8,10 +8,9 @@ router.use(srauth.loginOnlyExpress);
 router.use(srauth.activeOnlyExpress);
 
 router.get('/', function(req, res) {
-  log.setFunction('GET /');
-  log.logVerbose('req.user = ' + JSON.stringify(req.user));
+  log.logVerbose('profile: req.user = ' + JSON.stringify(req.user));
   srdb.fetchUserKeywords(req.user.uid).then(function(keys) {
-    log.logVerbose('Received keywords');
+    log.logVerbose('profile: Received keywords');
     res.render('profile', {
       title: 'User Profile',
       user: req.user.playername,

@@ -5,7 +5,6 @@ const srauth = require('../bin/srauth');
 const log = require('../bin/logger');
 
 router.get('/', function(req, res) {
-  log.setFunction('GET /');
   if (req.isAuthenticated()) {
     res.redirect('/profile');
   } else {
@@ -34,7 +33,6 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
 });
 
 router.get('/logout', function(req, res) {
-  log.setFunction('GET /logout');
   req.logout();
   res.redirect('/');
 });

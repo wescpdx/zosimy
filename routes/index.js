@@ -6,7 +6,6 @@ const util = require('../bin/srutils');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  log.setFunction('GET /');
   var announcement = srdb.fetchAnnounce(null).then(function(rows){
     res.render('index', { title: 'Seven Roses', announce: rows, version: util.appVersion });
   });

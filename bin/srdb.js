@@ -18,14 +18,14 @@ const _srdb = {
         ssl: { rejectUnauthorized: false }
       });
       await client.connect();
-      log.logInfo('pg: Connected to database');
-      log.logVerbose('pg: Issuing query: ' + qry);
+      log.logInfo('srdb.pg: Connected to database');
+      log.logVerbose('srdb.pg: Issuing query: ' + qry);
       let result = await client.query(qry);
-      log.logVerbose('pg: Fetched ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.pg: Fetched ' + result.rows.length + ' rows');
       client.end();
       return result;
     } catch(e) {
-      log.logError('Error connecting to DB:' + e.message);
+      log.logError('srdb.pg: Error connecting to DB:' + e.message);
     }
   },
 };
@@ -33,37 +33,35 @@ const _srdb = {
 // Validation functions
 const valid = {
   path: function(str) {
-    log.setFunction('valid-path');
     let out = str;
     if (!out) {
-      log.log('Falsy value - aborting', 4);
+      log.logWarning('srdb.valid.path: Falsy value - aborting');
       return out;
     }
-    log.log('Validating: ' + out, 10);
+    log.logVerbose('srdb.valid.path: Validating: ' + out);
     out = out.toLowerCase();
-    log.log('Transform 1: ' + out, 10);
+    log.logVerbose('srdb.valid.path: Transform 1: ' + out);
     out = S(out).replaceAll('%20', '_').replaceAll(' ', '_').replaceAll('+', '_').latinise().trim();
-    log.log('Transform 2: ' + out, 10);
+    log.logVerbose('srdb.valid.path: Transform 2: ' + out);
     if (out.match(/[^a-z0-9_-]/)) {
-      log.log('Invalid characters', 8);
+      log.logInfo('srdb.valid.path: Invalid characters');
       return false;
     }
-    log.log('Validated', 8);
+    log.logVerbose('srdb.valid.path: Validated');
     return out;
   },
 
   sqlText: function(str) {
-    log.setFunction('valid-sqlText');
     let out = str, esc = '\\';
     if (!out) {
-      log.log('Falsy value - aborting', 4);
+      log.logWarning('srdb.valid.sqlText: Falsy value - aborting');
       return out;
     }
-    log.log('Validating: ' + out, 10);
+    log.logVerbose('srdb.valid.sqlText: Validating: ' + out);
     out = S(out).trim();
-    log.log('Transform 1: ' + out, 10);
+    log.logVerbose('srdb.valid.sqlText: Transform 1: ' + out);
     out = S(out).replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
-    log.log('Transform 2: ' + out, 10);
+    log.logVerbose('srdb.valid.sqlText: Transform 2: ' + out);
     return out;
   },
 
@@ -71,19 +69,19 @@ const valid = {
     const esc = '\\';
     let out = str;
     if (!out) {
-      log.logWarning('sqlString: Falsy value - aborting');
+      log.logWarning('srdb.valid.sqlString: Falsy value - aborting');
       return out;
     }
-    log.logVerbose('sqlString: Validating: ' + out);
+    log.logVerbose('srdb.valid.sqlString: Validating: ' + out);
     if (V(out).latinise().s.match(/[^a-zA-Z0-9_'"\\-]/)) {
-      log.logWarning('sqlString: Invalid characters');
+      log.logWarning('srdb.valid.sqlString: Invalid characters');
       return false;
     }
-    log.log('Validated', 8);
+    log.logVerbose('srdb.valid.sqlString: Validated');
     out = S(out).trim();
-    log.log('Transform 1: ' + out, 10);
+    log.logVerbose('srdb.valid.sqlString: Transform 1: ' + out);
     out = S(out).replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
-    log.log('Transform 2: ' + out, 10);
+    log.logVerbose('srdb.valid.sqlString: Transform 2: ' + out);
     return out;
   }
 };
@@ -97,9 +95,9 @@ const forExport = {
     let result = [];
     try {
       result = await _srdb.pg(qry);
-      log.logVerbose('fetchAnnounce: Received ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.fetchAnnounce: Received ' + result.rows.length + ' rows');
     } catch(e) {
-      log.logError('fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
+      log.logError('srdb.fetchAnnounce: Error querying database - ' + qry + ' || ' + e.message);
       return ['We ran into an error while fetching announcements. Sorry.'];
     }
     let rows = result.rows;
@@ -120,15 +118,15 @@ const forExport = {
     let result = [];
     try {
       result = await _srdb.pg(qry);
-      log.logVerbose('fetchUserByAuth: Received ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
     } catch(e) {
-      log.logError('fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
+      log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
       return null;
     }
     let rows = result.rows;
     let u = {};
     if (rows.length === 0) {
-      log.logInfo('Blank new user record');
+      log.logInfo('srdb.fetchUserByAuth: Blank new user record');
       u = {
         new: true,
         guid: 'new',
@@ -136,7 +134,7 @@ const forExport = {
         pkey: key
       };
     } else if (rows.length === 1) {
-      log.logInfo('Found user: ' + rows[0].player_name);
+      log.logInfo('srdb.fetchUserByAuth: Found user: ' + rows[0].player_name);
       u = {
         uid: rows[0].guid,
         playername: rows[0].player_name,
@@ -146,10 +144,10 @@ const forExport = {
         admin: rows[0].admin
       };
     } else {
-      log.logError('ERROR - Duplicate auth record');
+      log.logError('srdb.fetchUserByAuth: ERROR - Duplicate auth record');
       throw('Duplicate auth record ' + provider + '//' + key + ' Found in users table');
     }
-    log.logVerbose('u = ' + JSON.stringify(u));
+    log.logVerbose('srdb.fetchUserByAuth: u = ' + JSON.stringify(u));
     return u;
   },
   
@@ -175,40 +173,39 @@ const forExport = {
       }
 
       // Create user record
-      log.log('Making guid', 9);
+      log.logVerbose('srdb.addUser: Making guid');
       let usrid = getGuid();
-      log.log('usrid = ' + usrid, 8);
+      log.logVerbose('srdb.addUser: usrid = ' + usrid);
       let qry = "INSERT INTO user_data.users (guid, player_name, char_name, email, active, admin) " +
         "VALUES ('" + usrid + "','" + u.playername + "','" + u.charname + "','" + u.email + "', false, false) ";
-      log.log('qry = ' + qry, 8);
+      log.logVerbose('srdb.addUser: qry = ' + qry);
       bqClient.query(qry).then(function(res) {
-        log.log('Executing user insert', 7);
-        log.log('res stringify: '+JSON.stringify(res), 10);
+        log.logInfo('srdb.addUser: Executing user insert');
+        log.logVerbose('srdb.addUser: res stringify: '+JSON.stringify(res));
         resolve(true);
       }).then(
         function() {
           // Create user auth record
-          log.log('Executing second stage', 7);
+          log.logVerbose('srdb.addUser: Executing second stage');
           let qry2 = "INSERT INTO user_data.user_auth (guid, provider, prkey) " +
           "VALUES ('" + usrid + "', '" + u.provider + "', '" + u.key + "')";
           bqClient.query(qry2).then(
             function(res) {
-              log.log('Executing user auth insert');
-              log.log('res stringify: '+JSON.stringify(res), 10);
+              log.logInfo('srdb.addUser: Executing user auth insert');
+              log.logVerbose('srdb.addUser: res stringify: '+JSON.stringify(res), 10);
               resolve(true);
             }
           )
         }
       ).catch(
         function(err) {
-          log.log('Error: '+err, 3);
+          log.logError('srdb.addUser: Error: '+err, 3);
         }
       )
     });
   },
 
   fetchTopic: function(topic, usr) {
-    log.setFunction('fetchTopic');
     return new Promise(function(resolve, reject) {
       let qry, art = {};
       // Input validation
@@ -219,7 +216,7 @@ const forExport = {
       }
 
       // Query for article data
-      log.log('Fetching article data', 7);
+      log.logVerbose('srdb.fetchTopic: Fetching article data');
       if (usr === 'admin') {
         qry = 'SELECT tt.title, ta.article_guid, ta.content, tk.keyword '
         + 'FROM topic_data.topics AS tt '
@@ -244,26 +241,23 @@ const forExport = {
         + ' WHERE uk.user_guid = "' + usr.uid + '"'
         + 'AND tal.alias = "' + topic + '"';
       }
-      log.log('qry = ' + qry, 10);
+      log.logVerbose('srdb.fetchTopic: qry = ' + qry);
       bqClient.query(qry).then(function(res) {
         let rows, articles = [];
-        log.log('res stringify: '+JSON.stringify(res), 10);
+        log.logVerbose('srdb.fetchTopic: res stringify: '+JSON.stringify(res));
         rows = res[0];
-        log.log('rows = '+JSON.stringify(rows), 10);
-        log.log('rows has ' + rows.length + ' rows', 9);
+        log.logVerbose('srdb.fetchTopic: rows = '+JSON.stringify(rows));
+        log.logVerbose('srdb.fetchTopic: rows has ' + rows.length + ' rows');
         if (rows.length > 0) {
-          log.log('Prep for loop with '+rows.length+' rows', 9);
           let guids = {}, guidlist = [];
           art.title = rows[0].title;
           art.articles = [];
           for (let aa=0, len = rows.length; aa < len; aa++) {
-            log.log('Reading row '+aa, 9);
-            log.log('row value = ' + JSON.stringify(rows[aa]), 10);
             if (guids[rows[aa].article_guid]) {
-              log.log('Duplicate article - adding keyword', 6);
+              log.logInfo('srdb.fetchTopic: Duplicate article - adding keyword');
               guids[rows[aa].article_guid].keyword.push([rows[aa].keyword]);
             } else {
-              log.log('Adding article', 6);
+              log.logVerbose('srdb.fetchTopic: Adding article');
               guidlist.push(rows[aa].article_guid);
               guids[rows[aa].article_guid] = {
                 guid: rows[aa].article_guid,
@@ -278,7 +272,7 @@ const forExport = {
           }
           resolve(art);
         } else {
-          log.log('No articles found', 2);
+          log.logWarning('srdb.fetchTopic: No articles found');
           art.title = 'No Information Available';
           art.articles = [{
             guid: 'none',
@@ -288,37 +282,36 @@ const forExport = {
         }
         resolve(art);
       }).catch(function(err) {
-        log.log('Executing failure condition', 7);
-        log.log('Error: '+err);
+        log.logError('srdb.fetchTopic: Executing failure condition');
+        log.logError('srdb.fetchTopic: Error: '+err);
       });
     });
   },
 
   fetchUserByID: function(uid) {
-    log.setFunction('fetchUserByID');
     let qry, u;
-    log.log('Executing', 7);
+    log.logVerbose('srdb.fetchUserByID: Executing');
     return new Promise(function(resolve, reject) {
       let qry;
-      log.log('Fetching user by ID', 7);
+      log.logVerbose('srdb.fetchUserByID: Fetching user by ID');
       qry = "SELECT guid, player_name, char_name, email, active, admin " +
         "FROM user_data.users WHERE guid = '" + uid + "'";
-      log.log('qry = ' + qry, 10);
+      log.logVerbose('srdb.fetchUserByID: qry = ' + qry);
       bqClient.query(qry).then(function(res) {
         let rows, announces = [];
-        log.log('res stringify: '+JSON.stringify(res), 10);
+        log.logVerbose('srdb.fetchUserByID: res stringify: '+JSON.stringify(res));
         rows = res[0];
-        log.log('rows = '+JSON.stringify(rows), 10);
-        log.log('rows has ' + rows.length + ' rows', 9);
+        log.logVerbose('srdb.fetchUserByID: rows = '+JSON.stringify(rows));
+        log.logVerbose('srdb.fetchUserByID: rows has ' + rows.length + ' rows');
         if (rows.length === 0) {
-          log.log('No user found', 2);
+          log.logWarning('srdb.fetchUserByID: No user found');
           u = {
             uid: null,
             active: false,
             admin: false
           };
         } else if (rows.length === 1) {
-          log.log('Found user: ' + rows[0].player_name, 9);
+          log.logInfo('srdb.fetchUserByID: Found user: ' + rows[0].player_name);
           u = {
             uid: rows[0].guid,
             playername: rows[0].player_name,
@@ -328,19 +321,18 @@ const forExport = {
             admin: rows[0].admin
           };
         } else {
-          log.log('ERROR - Duplicate GUID', 1);
+          log.logError('srdb.fetchUserByID: ERROR - Duplicate GUID');
           throw('Duplicate GUID ' + uid + ' Found in user_data.users');
         }
         resolve(u);
       }).catch(function(err) {
-        log.log('Executing failure condition', 7);
-        log.log('Error: '+err);
+        log.logError('srdb.fetchUserByID: Executing failure condition');
+        log.logError('srdb.fetchUserByID: Error: '+err);
       });
     });
   },
 
   updateArticle: function(artid, content) {
-    log.setFunction('updateArticle');
     let qry;
     return new Promise(function(resolve, reject) {
       let qry, art = {};
@@ -361,19 +353,18 @@ const forExport = {
       + 'WHERE article_guid = "' + artid + '"';
 
       bqClient.query(qry).then(function(res) {
-        log.log('Update query returned: ' + JSON.stringify(res));
+        log.logVerbose('srdb.updateArticle: Update query returned: ' + JSON.stringify(res));
         resolve(true);
       }).catch(function(err) {
-        log.log('Executing failure condition', 7);
-        log.log('Error: '+err);
+        log.logError('srdb.updateArticle: Executing failure condition', 7);
+        log.logError('srdb.updateArticle: Error: '+err);
       });
     });
   },
 
   fetchArticle: function(artid) {
-    log.setFunction('fetchArticle');
     let qry, art;
-    log.log('Executing', 7);
+    log.logVerbose('srdb.fetchArticle: Executing');
     return new Promise(function(resolve, reject) {
       let qry, art = {};
       // Input validation
@@ -384,7 +375,7 @@ const forExport = {
       }
 
       // Query for article data
-      log.log('Fetching article data', 7);
+      log.logVerbose('srdb.fetchArticle: Fetching article data');
       qry = 'SELECT tt.title, ta.article_guid, ta.content, tk.keyword '
       + 'FROM topic_data.topics AS tt '
       + 'JOIN topic_data.articles AS ta '
@@ -393,13 +384,13 @@ const forExport = {
       + 'ON tk.article_guid = ta.article_guid '
       + 'WHERE ta.article_guid = "' + artid + '"';
       
-      log.log('qry = ' + qry, 10);
+      log.logVerbose('srdb.fetchArticle: qry = ' + qry);
       bqClient.query(qry).then(function(res) {
         let rows, article;
-        log.log('res stringify: '+JSON.stringify(res), 10);
+        log.logVerbose('srdb.fetchArticle: res stringify: '+JSON.stringify(res), 10);
         rows = res[0];
-        log.log('rows = '+JSON.stringify(rows), 10);
-        log.log('rows has ' + rows.length + ' rows', 9);
+        log.logVerbose('srdb.fetchArticle: rows = '+JSON.stringify(rows), 10);
+        log.logVerbose('srdb.fetchArticle: rows has ' + rows.length + ' rows', 9);
         if (rows.length > 0) {
           article = {
             title: rows[0].title,
@@ -409,15 +400,12 @@ const forExport = {
             keywords: [rows[0].keyword]
           }
           if (rows.length > 1) {
-            log.log('Prep for loop with '+rows.length+' rows', 9);
             for (let aa=1, len = rows.length; aa < len; aa++) {
-              log.log('Reading row '+aa, 9);
-              log.log('row value = ' + JSON.stringify(rows[aa]), 10);
               article.keywords.push(rows[aa].keyword);
             }
           }
         } else {
-          log.log('No article found', 2);
+          log.logInfo('srdb.fetchArticle: No article found');
           article = {
             title: 'No article found',
             topic: 'No article found',
@@ -426,46 +414,40 @@ const forExport = {
             keywords: []
           }
         }
-        log.log('Returning article: ' + JSON.stringify(art), 10);
+        log.logVerbose('srdb.fetchArticle: Returning article: ' + JSON.stringify(art));
         resolve(article);
       }).catch(function(err) {
-        log.log('Executing failure condition', 7);
-        log.log('Error: '+err);
+        log.logError('srdb.fetchArticle: Executing failure condition');
+        log.logError('srdb.fetchArticle: Error: '+err);
       });
     });
   },
 
   fetchUserKeywords: function(uid) {
-    log.setFunction('fetchUserKeywords');
-    log.log('Executing', 7);
+    log.logVerbose('srdb.fetchUserKeywords: Executing');
     return new Promise(function(resolve, reject) {
       let qry, keys = [];
-      log.log('Fetching user keywords', 7);
+      log.logVerbose('srdb.fetchUserKeywords: Fetching user keywords', 7);
       qry = "SELECT keyword"
         + " FROM user_data.keywords WHERE user_guid = '" + uid + "'";
-      log.log('qry = ' + qry, 10);
+      log.logVerbose('srdb.fetchUserKeywords: qry = ' + qry, 10);
       bqClient.query(qry).then(function(res) {
         let rows, keywords = [];
-        log.log('res stringify: '+JSON.stringify(res), 10);
+        log.logVerbose('srdb.fetchUserKeywords: res stringify: '+JSON.stringify(res));
         rows = res[0];
-        log.log('rows = '+JSON.stringify(rows), 10);
-        log.log('rows has ' + rows.length + ' rows', 9);
         if (rows.length > 1) {
           if (rows.length > 0) {
-            log.log('Prep for loop with '+rows.length+' rows', 9);
             for (let aa=0, len = rows.length; aa < len; aa++) {
-              log.log('Reading row '+aa, 9);
-              log.log('Pushing value ' + rows[aa].keyword, 9);
               keys.push(rows[aa].keyword);
             }
           }
         } else {
-          log.log('No keywords found', 2);
+          log.logInfo('srdb.fetchUserKeywords: No keywords found');
         }
         resolve(keys);
       }).catch(function(err) {
-        log.log('Executing failure condition', 7);
-        log.log('Error: '+err);
+        log.logError('srdb.fetchUserKeywords: Executing failure condition', 7);
+        log.logError('srdb.fetchUserKeywords: Error: '+err);
       });
     });
   },

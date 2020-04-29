@@ -41,11 +41,10 @@ passport.use(new StrategyGoogle(
   },
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function() {
-      log.logInfo('Trying to authorize Google ID ' + profile.id);
+      log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
       let authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
-        log.logVerbose('Executing passport callback via promise', 9);
-        log.logVerbose('u = ' + uid, 10);
-        log.logVerbose('u.guid = ' + uid, 10);
+        log.logVerbose('app.passport: u = ' + uid, 10);
+        log.logVerbose('app.passport: u.guid = ' + uid, 10);
         return done(null, uid);
       });
     });
