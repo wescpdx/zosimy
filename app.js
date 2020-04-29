@@ -51,6 +51,14 @@ passport.use(new StrategyGoogle(
   }
 ));
 
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
 // Route handlers
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
