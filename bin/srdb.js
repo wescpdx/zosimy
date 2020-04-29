@@ -69,7 +69,7 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.sqlString: Validating: ' + out);
-    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
+    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"').value();
     log.logVerbose('srdb.valid.sqlString: Transform 1: ' + out);
     if (V(out).latinise().s.match(/[^a-zA-Z0-9_'"\\-]/)) {
       log.logWarning('srdb.valid.sqlString: Invalid characters');
