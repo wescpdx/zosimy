@@ -9,19 +9,19 @@ router.use(srauth.loginOnlyExpress);
 router.get('/', function(req, res) {
   if (req.user.new) {
     log.logInfo('createuser: Starting req.user.new');
-    log.logVerbose('createuser: With u = ' + JSON.stringify(u));
+    log.logVerbose('createuser: With user data = ' + JSON.stringify(req.user));
     res.render('create_new', {
       user: req.user.playername
     });
   } else if (req.user.active) {
     log.logInfo('createuser: Starting req.user.active');
-    log.logVerbose('createuser: With u = ' + JSON.stringify(u));
+    log.logVerbose('createuser: With user data = ' + JSON.stringify(req.user));
     res.render('create_exists', {
       user: req.user.playername
     });
   } else {
     log.logInfo('createuser: Starting req.user.pending');
-    log.logVerbose('createuser: With u = ' + JSON.stringify(u));
+    log.logVerbose('createuser: With user data = ' + JSON.stringify(req.user));
     res.render('create_pending', {
       user: req.user.playername
     });
