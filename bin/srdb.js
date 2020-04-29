@@ -116,7 +116,7 @@ const forExport = {
     let qry = "SELECT u.user_id, u.player_name, u.email, u.char_name, u.active, u.admin " +
         "FROM user_auth ua " +
         "JOIN users u ON ua.user_id = u.user_id " +
-        "WHERE ua.provider = " + provider + " AND ua.key = '" + key + "'";
+        "WHERE ua.provider = '" + provider + "' AND ua.key = '" + key + "'";
     let result = [];
     try {
       result = await _srdb.pg(qry);
