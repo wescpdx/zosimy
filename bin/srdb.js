@@ -145,8 +145,8 @@ const forExport = {
     return u;
   },
   
-  addUser: function(u) {
-    u.playername = valid.sqlString(u.playername;
+  addUser: async function(u) {
+    u.playername = valid.sqlString(u.playername);
     if (!u.playername) {
       throw('Invalid player name: ' + u.playername);
     }
@@ -154,7 +154,7 @@ const forExport = {
     if (!u.charname) {
       throw('Invalid character name: ' + u.charname);
     }
-    u.email = valid.sqlString(u.email)
+    u.email = valid.sqlString(u.email);
     if (!u.email ) {
       throw('Invalid email: ' + u.email);
     }
@@ -179,7 +179,7 @@ const forExport = {
     
     // Create user auth record
     log.logVerbose('srdb.addUser: Ready to create user auth');
-    let qry = "INSERT INTO user_auth (user_id, provider, prkey) " +
+    qry = "INSERT INTO user_auth (user_id, provider, prkey) " +
         "VALUES ('" + newUserId + "', '" + u.provider + "', '" + u.key + "')";
     log.logVerbose('srdb.addUser: qry = ' + qry);
     try {
