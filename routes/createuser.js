@@ -35,7 +35,7 @@ router.post('/confirm', function(req, res) {
       provider: req.user.provider,
       key: req.user.pkey
     };
-    log.logInfo('createuser: Adding user');
+    log.logInfo('createuser: Adding user from ' + JSON.serialize(u));
     srdb.addUser(u).then(function(u2) {
       req.user = u2;
       log.logVerbose('createuser: User added, bouncing to /topic');
