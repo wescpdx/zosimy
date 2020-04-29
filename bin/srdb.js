@@ -113,14 +113,10 @@ const forExport = {
   },
   
   fetchUserByAuth: async function(provider, key) {
-    let provider_id = 0;
-    if (provider === 'google') {
-      provider_id = 1;
-    }
-    let qry = "SELECT u.guid, u.player_name, u.email, u.char_name, u.active, u.admin " +
+    let qry = "SELECT u.user_id, u.player_name, u.email, u.char_name, u.active, u.admin " +
         "FROM user_auth ua " +
-        "JOIN users u ON ua.guid = u.guid " +
-        "WHERE ua.provider_id = " + provider_id + " AND ua.key = '" + key + "'";
+        "JOIN users u ON ua.user_id = u.user_id " +
+        "WHERE ua.provider = " + provider + " AND ua.key = '" + key + "'";
     let result = [];
     try {
       result = await _srdb.pg(qry);
