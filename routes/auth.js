@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var srauth = require('../bin/srauth');
-var log = require('../bin/logger');
+const express = require('express');
+const router = express.Router();
+const passport = require('passport');
+const srauth = require('../bin/srauth');
+const log = require('../bin/logger');
 
 router.get('/', function(req, res) {
   log.setFunction('GET /');

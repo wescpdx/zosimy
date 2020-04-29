@@ -1,0 +1,18 @@
+extends layout
+block content
+    h1 Account Creation 
+    
+    p
+    | Before creating an account, please be sure you have spoken with the storyteller and your character
+    | has been accepted for play. If you have done so, you can enter your information below to submit your
+    | information for an account. The storyteller will then approve the account
+    | for access to the appropriate in-game information.
+
+    form(action="/create/confirm", method="post")
+        p Player Name:&nbsp
+            input(type="text", name="playername")
+        p Email Address:&nbsp
+            input(type="text", name="email")
+        p Character Name:&nbsp
+            input(type="text", name="charname")
+        p: input(type="submit")

@@ -54,7 +54,7 @@ const valid = {
 
   sqlText: function(str) {
     log.setFunction('valid-sqlText');
-    let out = str, bslash = '\\';
+    let out = str, esc = '\\';
     if (!out) {
       log.log('Falsy value - aborting', 4);
       return out;
@@ -62,27 +62,27 @@ const valid = {
     log.log('Validating: ' + out, 10);
     out = S(out).trim();
     log.log('Transform 1: ' + out, 10);
-    out = S(out).replaceAll(bslash, bslash + bslash).replaceAll("'", bslash + "'").replaceAll('"', bslash + '"');
+    out = S(out).replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
     log.log('Transform 2: ' + out, 10);
     return out;
   },
 
   sqlString: function(str) {
-    log.setFunction('valid-sqlString');
-    let out = str, bslash = '\\';
+    const esc = '\';
+    let out = str;
     if (!out) {
-      log.log('Falsy value - aborting', 4);
+      log.logWarning('sqlString: Falsy value - aborting');
       return out;
     }
-    log.log('Validating: ' + out, 10);
-    if (S(out).latinise().s.match(/[^a-zA-Z0-9_'"\\-]/)) {
-      log.log('Invalid characters');
+    log.logVerbose('sqlString: Validating: ' + out);
+    if (V(out).latinise().s.match(/[^a-zA-Z0-9_'"\\-]/)) {
+      log.logWarning('sqlString: Invalid characters');
       return false;
     }
     log.log('Validated', 8);
     out = S(out).trim();
     log.log('Transform 1: ' + out, 10);
-    out = S(out).replaceAll(bslash, bslash + bslash).replaceAll("'", bslash + "'").replaceAll('"', bslash + '"');
+    out = S(out).replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"');
     log.log('Transform 2: ' + out, 10);
     return out;
   }
@@ -113,10 +113,14 @@ const forExport = {
   },
   
   fetchUserByAuth: async function(provider, key) {
+    let provider_id = 0;
+    if (provider === 'google') {
+      provider_id = 1;
+    }
     let qry = "SELECT u.guid, u.player_name, u.email, u.char_name, u.active, u.admin " +
-        "FROM user_data.user_auth ua " +
-        "JOIN user_data.users u ON ua.guid = u.guid " +
-        "WHERE ua.provider = '" + provider + "' AND ua.prkey = '" + key + "'";
+        "FROM user_auth ua " +
+        "JOIN users u ON ua.guid = u.guid " +
+        "WHERE ua.provider_id = " + provider_id + " AND ua.key = '" + key + "'";
     let result = [];
     try {
       result = await _srdb.pg(qry);
@@ -126,8 +130,9 @@ const forExport = {
       return null;
     }
     let rows = result.rows;
+    let u = {};
     if (rows.length === 0) {
-      log.logInfo('Approving new user creation');
+      log.logInfo('Blank new user record');
       u = {
         new: true,
         guid: 'new',
@@ -146,12 +151,15 @@ const forExport = {
       };
     } else {
       log.logError('ERROR - Duplicate auth record');
-      throw('Duplicate auth record ' + provider + '//' + key + ' Found in user_data.users');
+      throw('Duplicate auth record ' + provider + '//' + key + ' Found in users table');
     }
+    log.logVerbose('u = ' + JSON.stringify(u));
+    resolve(u);
   },
   
   addUser: function(u) {
-    log.setFunction('addUser');
+    
+
     return new Promise(function(resolve, reject) {
       // Input validation
       if (valid.sqlString(u.playername)) {

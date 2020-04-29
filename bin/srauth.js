@@ -5,10 +5,10 @@ var srauth = {
   // If not authenticated, bounce to /auth
   loginOnlyExpress: function(req, res, next) {
     if (!req.isAuthenticated()) {
-      log.logVerbose('Auth failed')
+      log.logVerbose('Auth failed');
       res.redirect('/auth');
     } else {
-      log.logVerbose('Auth passed')
+      log.logVerbose('Auth passed');
       next();
     }
   },
