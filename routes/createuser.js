@@ -8,20 +8,20 @@ router.use(srauth.loginOnlyExpress);
 
 router.get('/', function(req, res) {
   if (req.user.new) {
-    log.logInfo('createuser: Starting req.user.new');
-    log.logVerbose('createuser: With user data = ' + JSON.stringify(req.user));
+    log.logInfo('createuser.new: Starting req.user.new');
+    log.logVerbose('createuser.new: With user data = ' + JSON.stringify(req.user));
     res.render('create_new', {
       user: req.user.playername
     });
   } else if (req.user.active) {
-    log.logInfo('createuser: Starting req.user.active');
-    log.logVerbose('createuser: With user data = ' + JSON.stringify(req.user));
+    log.logInfo('createuser.active: Starting req.user.active');
+    log.logVerbose('createuser.active: With user data = ' + JSON.stringify(req.user));
     res.render('create_exists', {
       user: req.user.playername
     });
   } else {
-    log.logInfo('createuser: Starting req.user.pending');
-    log.logVerbose('createuser: With user data = ' + JSON.stringify(req.user));
+    log.logInfo('createuser.pending: Starting req.user.pending');
+    log.logVerbose('createuser.pending: With user data = ' + JSON.stringify(req.user));
     res.render('create_pending', {
       user: req.user.playername
     });
@@ -37,13 +37,13 @@ router.post('/confirm', function(req, res) {
       provider: req.user.provider,
       key: req.user.pkey
     };
-    log.logInfo('createuser: Adding user from ' + JSON.stringify(u));
+    log.logInfo('createuser.confirm: Adding user from ' + JSON.stringify(u));
     srdb.addUser(u).then(function(u2) {
       req.user = u2;
-      log.logVerbose('createuser: User added, bouncing to /topic');
+      log.logVerbose('createuser.confirm: User added, bouncing to /topic');
       res.redirect('/topic');
     }).catch(function(err) {
-      log.logError('createuser: Error adding user: ' + err.message);
+      log.logError('createuser.confirm: Error adding user: ' + err.message);
       res.send('Error adding user: ' + err.message);
     });
   }
