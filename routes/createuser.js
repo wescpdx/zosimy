@@ -7,6 +7,7 @@ const log = require('../bin/logger');
 router.use(srauth.loginOnlyExpress);
 
 router.get('/', function(req, res) {
+  log.logVerbose('createuser: Evaluating user = ' + JSON.stringify(req.user));
   if (req.user.new) {
     log.logInfo('createuser.new: Starting req.user.new');
     log.logVerbose('createuser.new: With user data = ' + JSON.stringify(req.user));
