@@ -40,7 +40,10 @@ passport.use(new StrategyGoogle(
     callbackURL: 'https://seven-roses.herokuapp.com/auth/google/callback'
   },
   function(accessToken, refreshToken, profile, done) {
-    log.logVerbose('app.passport: Access function');
+    log.logVerbose('app.passport: Access passport function');
+    
+    
+    /**
     process.nextTick(function() {
       log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
       let authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
@@ -49,6 +52,7 @@ passport.use(new StrategyGoogle(
         return done(null, uid);
       });
     });
+    **/
   }
 ));
 

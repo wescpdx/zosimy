@@ -5,7 +5,7 @@ var srdb = require('../bin/srdb');
 var log = require('../bin/logger');
 
 router.use(srauth.loginOnlyExpress);
-router.use(srauth.activeOnlyExpress);
+//router.use(srauth.activeOnlyExpress);
 
 router.get('/', function(req, res) {
   log.logVerbose('profile: req.user = ' + JSON.stringify(req.user));
