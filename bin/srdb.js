@@ -121,14 +121,14 @@ const forExport = {
       log.logInfo('srdb.fetchUserByAuth: Blank new user record');
       u = {
         new: true,
-        guid: 'new',
+        uid: 'new',
         provider: provider,
         pkey: key
       };
     } else if (rows.length === 1) {
       log.logInfo('srdb.fetchUserByAuth: Found user: ' + rows[0].player_name);
       u = {
-        uid: rows[0].guid,
+        uid: rows[0].user_id,
         playername: rows[0].player_name,
         charname: rows[0].char_name,
         email: rows[0].email,
@@ -278,8 +278,8 @@ const forExport = {
     return new Promise(function(resolve, reject) {
       let qry;
       log.logVerbose('srdb.fetchUserByID: Fetching user by ID');
-      qry = "SELECT guid, player_name, char_name, email, active, admin " +
-        "FROM user_data.users WHERE guid = '" + uid + "'";
+      qry = "SELECT user_id, player_name, char_name, email, active, admin " +
+        "FROM user_data.users WHERE user_id = '" + uid + "'";
       log.logVerbose('srdb.fetchUserByID: qry = ' + qry);
       bqClient.query(qry).then(function(res) {
         let rows, announces = [];
@@ -297,7 +297,7 @@ const forExport = {
         } else if (rows.length === 1) {
           log.logInfo('srdb.fetchUserByID: Found user: ' + rows[0].player_name);
           u = {
-            uid: rows[0].guid,
+            uid: rows[0].user_id,
             playername: rows[0].player_name,
             charname: rows[0].char_name,
             email: rows[0].email,
@@ -305,8 +305,8 @@ const forExport = {
             admin: rows[0].admin
           };
         } else {
-          log.logError('srdb.fetchUserByID: ERROR - Duplicate GUID');
-          throw('Duplicate GUID ' + uid + ' Found in user_data.users');
+          log.logError('srdb.fetchUserByID: ERROR - Duplicate UID');
+          throw('Duplicate UID ' + uid + ' Found in user_data.users');
         }
         resolve(u);
       }).catch(function(err) {
