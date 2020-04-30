@@ -5,7 +5,6 @@ const srauth = require('../bin/srauth');
 const log = require('../bin/logger');
 
 router.get('/', function(req, res) {
-  passport.authenticate('google', { failureRedirect: '/login' });
   if (req.isAuthenticated()) {
     res.redirect('/profile');
   } else {
