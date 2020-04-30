@@ -35,7 +35,7 @@ router.post('/confirm', function(req, res) {
       email: req.body.email,
       charname: req.body.charname,
       provider: req.user.provider,
-      key: req.user.pkey
+      key: req.user.key
     };
     log.logInfo('createuser.confirm: Adding user from ' + JSON.stringify(u));
     srdb.addUser(u).then(function(u2) {

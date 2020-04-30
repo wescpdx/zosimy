@@ -10,7 +10,7 @@ const  app = express();
 
 // Passport for authentication
 const passport = require('passport');
-const StrategyGoogle = require('passport-google-oauth20').Strategy;
+const StrategyGoogle = require('passport-google-oauth').Strategy;
 
 // PUG as view engine 
 app.set('views', path.join(__dirname, 'views'));
