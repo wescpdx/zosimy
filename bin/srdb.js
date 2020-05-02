@@ -397,7 +397,7 @@ const forExport = {
     });
   },
 
-  fetchUserKeywords: function(uid) {
+  fetchUserKeywords: async function(uid) {
       qry = "SELECT keyword" +
           " FROM user_keywords WHERE user_id = " + uid;
     let result = [];
