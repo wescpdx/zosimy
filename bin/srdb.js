@@ -398,35 +398,27 @@ const forExport = {
   },
 
   fetchUserKeywords: function(uid) {
-    log.logVerbose('srdb.fetchUserKeywords: Executing');
-    return new Promise(function(resolve, reject) {
-      let qry, keys = [];
-      log.logVerbose('srdb.fetchUserKeywords: Fetching user keywords', 7);
-      qry = "SELECT keyword"
-        + " FROM user_data.keywords WHERE user_guid = '" + uid + "'";
-      log.logVerbose('srdb.fetchUserKeywords: qry = ' + qry, 10);
-      bqClient.query(qry).then(function(res) {
-        let rows, keywords = [];
-        log.logVerbose('srdb.fetchUserKeywords: res stringify: '+JSON.stringify(res));
-        rows = res[0];
-        if (rows.length > 1) {
-          if (rows.length > 0) {
-            for (let aa=0, len = rows.length; aa < len; aa++) {
-              keys.push(rows[aa].keyword);
-            }
-          }
-        } else {
-          log.logInfo('srdb.fetchUserKeywords: No keywords found');
-        }
-        resolve(keys);
-      }).catch(function(err) {
-        log.logError('srdb.fetchUserKeywords: Executing failure condition', 7);
-        log.logError('srdb.fetchUserKeywords: Error: '+err);
-      });
-    });
+      qry = "SELECT keyword" +
+          " FROM user_keywords WHERE user_id = " + uid;
+    let result = [];
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
+    } catch(e) {
+      log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
+      return null;
+    }
+    let rows = result.rows;
+    if (rows.length > 1) {
+      for (let i = 0, l = rows.length; i < l; i++) {
+        keys.push(rows[i].keyword);
+      }
+    } else {
+      log.logInfo('srdb.fetchUserKeywords: No keywords found');
+      return [];
+    }
+    resolve(keys);
   },
-
-
 
 };
 

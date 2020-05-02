@@ -22,9 +22,9 @@ CREATE TABLE users (
   PRIMARY KEY (user_id)
 );
 INSERT INTO users (player_name, char_name, email, active, admin) VALUES
-  ('Wes', 'Storyteller', 'wesc@antitribu.com', TRUE, TRUE);
+  ('Wes', 'Storyteller', 'wesc@antitribu.com', TRUE, TRUE),
+  ('Testy McTest', 'Dummy', 'something@antitribu.com', TRUE, FALSE);
   
-
 CREATE TYPE provider AS ENUM('google');
 CREATE TABLE user_auth (
   user_id INTEGER,
@@ -32,3 +32,13 @@ CREATE TABLE user_auth (
   key VARCHAR(50),
   PRIMARY KEY (user_id, provider)
 );
+
+CREATE TABLE user_keywords (
+  user_id INTEGER,
+  keyword VARCHAR(50),
+  PRIMARY KEY (user_id, keyword)
+);
+INSERT INTO user_keywords (user_id, keyword) VALUES
+  (9, 'occult1'),
+  (9, 'occult2');
+  
