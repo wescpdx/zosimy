@@ -272,48 +272,38 @@ const forExport = {
     });
   },
 
-  fetchUserByID: function(uid) {
-    let qry, u;
-    log.logVerbose('srdb.fetchUserByID: Executing');
-    return new Promise(function(resolve, reject) {
-      let qry;
-      log.logVerbose('srdb.fetchUserByID: Fetching user by ID');
-      qry = "SELECT user_id, player_name, char_name, email, active, admin " +
+  fetchUserByID: async function(uid) {
+    let qry = "SELECT user_id, player_name, char_name, email, active, admin " +
         "FROM user_data.users WHERE user_id = '" + uid + "'";
-      log.logVerbose('srdb.fetchUserByID: qry = ' + qry);
-      bqClient.query(qry).then(function(res) {
-        let rows, announces = [];
-        log.logVerbose('srdb.fetchUserByID: res stringify: '+JSON.stringify(res));
-        rows = res[0];
-        log.logVerbose('srdb.fetchUserByID: rows = '+JSON.stringify(rows));
-        log.logVerbose('srdb.fetchUserByID: rows has ' + rows.length + ' rows');
-        if (rows.length === 0) {
-          log.logWarning('srdb.fetchUserByID: No user found');
-          u = {
-            uid: null,
-            active: false,
-            admin: false
-          };
-        } else if (rows.length === 1) {
-          log.logInfo('srdb.fetchUserByID: Found user: ' + rows[0].player_name);
-          u = {
-            uid: rows[0].user_id,
-            playername: rows[0].player_name,
-            charname: rows[0].char_name,
-            email: rows[0].email,
-            active: rows[0].active,
-            admin: rows[0].admin
-          };
-        } else {
-          log.logError('srdb.fetchUserByID: ERROR - Duplicate UID');
-          throw('Duplicate UID ' + uid + ' Found in user_data.users');
-        }
-        resolve(u);
-      }).catch(function(err) {
-        log.logError('srdb.fetchUserByID: Executing failure condition');
-        log.logError('srdb.fetchUserByID: Error: '+err);
-      });
-    });
+    let result = [];
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.fetchUserByID: Received ' + result.rows.length + ' rows');
+    } catch(e) {
+      log.logError('srdb.fetchUserByID: Error querying database - ' + qry + ' || ' + e.message);
+      return ['We ran into an error while fetching announcements. Sorry.'];
+    }
+    let rows = result.rows;
+    let u = {};
+    if (rows.length === 0) {
+      log.logWarning('srdb.fetchUserByID: No user found');
+      u = {
+        uid: null,
+        active: false,
+        admin: false
+      };
+    } else if (rows.length === 1) {
+      log.logInfo('srdb.fetchUserByID: Found user: ' + rows[0].player_name);
+      u = {
+        uid: rows[0].user_id,
+        playername: rows[0].player_name,
+        charname: rows[0].char_name,
+        email: rows[0].email,
+        active: rows[0].active,
+        admin: rows[0].admin
+      };
+    }
+    return u;
   },
 
   updateArticle: function(artid, content) {
