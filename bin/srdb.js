@@ -121,7 +121,7 @@ const forExport = {
       log.logInfo('srdb.fetchUserByAuth: Blank new user record');
       u = {
         new: true,
-        uid: 'new',
+        uid: 'pending',
         provider: provider,
         pkey: key
       };
