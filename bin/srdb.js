@@ -279,37 +279,33 @@ const forExport = {
     }
     return u;
   },
-/**
+
   updateArticle: function(artid, content) {
-    let qry;
-    return new Promise(function(resolve, reject) {
-      let qry, art = {};
-      // Input validation
-      if (valid.sqlString(artid)) {
-        artid = valid.sqlString(artid);
-      } else {
-        throw ('Invalid artid: ' + artid);
-      }
-      if (valid.sqlText(content)) {
-        artid = valid.sqlText(content);
-      } else {
-        throw ('Invalid content: ' + content);
-      }
-
-      // Post new article data
-      qry = 'UPDATE topic_data.articles SET content = "' + content + '"' +
-          'WHERE article_guid = "' + artid + '"';
-
-      bqClient.query(qry).then(function(res) {
-        log.logVerbose('srdb.updateArticle: Update query returned: ' + JSON.stringify(res));
-        resolve(true);
-      }).catch(function(err) {
-        log.logError('srdb.updateArticle: Executing failure condition', 7);
-        log.logError('srdb.updateArticle: Error: '+err);
-      });
-    });
+    // Input validation
+    artid = parseInt(artid);
+    content = valid.sqlText(content);
+    if (!content) {
+      throw(new Error('Invalid content, aborting update'));
+    }
+    let qry = "UPDATE articles SET content = '" + content + "'" +
+          "WHERE article_id = '" + artid + "'";
+    let result = [];
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.updateArticle: Received ' + result.rows.length + ' rows');
+    } catch(e) {
+      log.logError('srdb.updateArticle: Error querying database - ' + qry + ' || ' + e.message);
+      return {};
+    }
+    if (result.rowCount > 0) {
+      log.logInfo('srdb.updateArticle: Update successful');
+      return true;
+    } else {
+      log.logInfo('srdb.updateArticle: Update failed, no error');
+      return false;
+    }
   },
-**/
+
   fetchArticle: async function(artid) {
     let qry = "SELECT tt.title, tt.display_name, ta.article_id, ta.content, tr.rule " +
         "FROM topics AS tt " +
