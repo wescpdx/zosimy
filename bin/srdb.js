@@ -280,7 +280,7 @@ const forExport = {
     return u;
   },
 
-  updateArticle: function(artid, content) {
+  updateArticle: async function(artid, content) {
     // Input validation
     artid = parseInt(artid);
     content = valid.sqlText(content);
