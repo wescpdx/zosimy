@@ -48,7 +48,7 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.path: Validating: ' + out);
-    out = V(out).toLowerCase().replaceAll('%20', '_').replaceAll(' ', '_').replaceAll('+', '_').latinise().trim().value();
+    out = V(out).lowerCase().replaceAll('%20', '_').replaceAll(' ', '_').replaceAll('+', '_').latinise().trim().value();
     log.logVerbose('srdb.valid.path: Transform 1: ' + out);
     if (out.match(/[^a-z0-9_-]/)) {
       log.logInfo('srdb.valid.path: Invalid characters');
