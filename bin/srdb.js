@@ -328,7 +328,7 @@ const forExport = {
       article = {
         title: rows[0].title,
         topic: rows[0].display_name,
-        guid: rows[0].article_id,
+        article_id: rows[0].article_id,
         content: rows[0].content,
         rules: [rows[0].rule]
       };
