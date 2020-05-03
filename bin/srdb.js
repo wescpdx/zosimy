@@ -119,7 +119,6 @@ const forExport = {
     try {
       result = await _srdb.pg(qry);
       log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
-      log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
     } catch(e) {
       log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
       return null;
@@ -142,8 +141,24 @@ const forExport = {
         charname: rows[0].char_name,
         email: rows[0].email,
         active: rows[0].active,
-        admin: rows[0].admin
+        admin: rows[0].admin,
+        qualities: {}
       };
+      qry = "SELECT keyword, rating FROM user_keywords WHERE user_id = " + u.uid;
+      result = [];
+      try {
+        result = await _srdb.pg(qry);
+        log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
+      } catch(e) {
+        log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
+        result = [];
+      }
+      rows = result.rows;
+      if (rows.length > 0) {
+        for (let i = 0, l = rows.length; i < l; i++) {
+          u.qualities[rows[i].keyword] = rows[i].rating;
+        }
+      }
     } else {
       log.logError('srdb.fetchUserByAuth: ERROR - Duplicate auth record');
       throw('Duplicate auth record ' + provider + '//' + key + ' Found in users table');
