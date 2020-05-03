@@ -361,20 +361,20 @@ const forExport = {
     let result = [];
     try {
       result = await _srdb.pg(qry);
-      log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.fetchUserKeywords: Received ' + result.rows.length + ' rows');
     } catch(e) {
-      log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
+      log.logError('srdb.fetchUserKeywords: Error querying database - ' + qry + ' || ' + e.message);
       return null;
     }
     let rows = result.rows;
-    let keys = [];
+    let keys = {};
     if (rows.length > 1) {
       for (let i = 0, l = rows.length; i < l; i++) {
-        keys.push(rows[i].keyword);
+        keys[rows[i].keyword] = rows[i].rating;
       }
     } else {
       log.logInfo('srdb.fetchUserKeywords: No keywords found');
-      return [];
+      return {};
     }
     return keys;
   },
