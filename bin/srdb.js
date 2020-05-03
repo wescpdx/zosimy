@@ -65,7 +65,7 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.sqlText: Validating: ' + out);
-    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"').value();
+    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", "''").replaceAll('"', esc + '"').value();
     log.logVerbose('srdb.valid.sqlText: Transform 1: ' + out);
     return out;
   },
