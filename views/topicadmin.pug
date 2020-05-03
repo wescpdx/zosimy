@@ -1,14 +1,14 @@
 extends layout
 block content
-  h1= title
-  if articles
-    p Information known to the Storyteller about "#{title}":
-    each art in articles
+  h1= display_name
+  if content_array
+    p Information known to the Storyteller about "#{display_name}":
+    each article in content_array
       .articlecontainer
-        .article #{art.content}
+        .article #{article.content}
 
-        each key in art.keyword
+        each key in article.rule
          .matches #{key}
-        a(href='/topic/edit/'+art.guid) EDIT
+        a(href='/topic/edit/'+article.article_id) EDIT
   else
-    p There is no information available on '#{topic}'
+    p There is no information available to the Storyteller on '#{display_name}'
