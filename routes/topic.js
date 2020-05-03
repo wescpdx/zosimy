@@ -46,11 +46,11 @@ router.get('/edit/:id', function(req, res) {
 
 router.get('/:id', function(req, res) {
   log.logVerbose('topic.get: Entering router for id '+req.params.id);
-  srdb.fetchTopic(req.params.id, req.user).then(function(topic) {
+  srdb.fetchTopic(req.params.id, req.user).then(function(content_array) {
     res.render(req.user.admin ? 'topicadmin' : 'topic', {
-      display_name: topic.display_name,
-      charName: req.user.charname,
-      articles: topic.articles
+      display_name: content_array[0].display_name,
+      content_array: content_array,
+      charName: req.user.charname
     });
   });
 });

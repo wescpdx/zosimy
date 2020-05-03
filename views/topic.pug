@@ -3,9 +3,9 @@ block content
   h1= display_name
   if articles
     p Information known to #{charName} about "#{display_name}":
-    each art in articles
+    each article in content_array
       .articlecontainer
-        .article #{art.content}
+        .article #{article.content}
 
   else
     p There is no information available to you about '#{display_name}'
