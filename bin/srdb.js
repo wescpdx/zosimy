@@ -78,7 +78,7 @@ const valid = {
       return out;
     }
     log.logVerbose('srdb.valid.sqlString: Validating: ' + out);
-    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", esc + "'").replaceAll('"', esc + '"').value();
+    out = V(out).trim().replaceAll(esc, esc + esc).replaceAll("'", "''").replaceAll('"', esc + '"').value();
     log.logVerbose('srdb.valid.sqlString: Transform 1: ' + out);
     out = V(out).replaceAll(/[^a-zA-Z0-9_'"\\\@-]/, '').value();
     log.logVerbose('srdb.valid.sqlString: Transform 2: ' + out);
@@ -292,7 +292,7 @@ const forExport = {
     let result = [];
     try {
       result = await _srdb.pg(qry);
-      log.logVerbose('srdb.updateArticle: Received ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.updateArticle: Updated ' + result.rowCount + ' rows');
     } catch(e) {
       log.logError('srdb.updateArticle: Error querying database - ' + qry + ' || ' + e.message);
       return {};
