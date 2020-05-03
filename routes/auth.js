@@ -6,6 +6,7 @@ const log = require('../bin/logger');
 
 router.get('/', function(req, res) {
   if (req.isAuthenticated()) {
+    log.logVerbose('Authenticated, bouncing to profile');
     res.redirect('/profile');
   } else {
     res.render('auth', {

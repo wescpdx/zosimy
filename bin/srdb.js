@@ -30,12 +30,11 @@ const _srdb = {
     }
   },
   satisfyRule: function(usr, rule) {
-    // TODO: Implement actual rule checking
+    log.logVerbose('srdb.satisfyRule: Checking rule ' + JSON.stringify(rule));
     if (usr.admin) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   },
 };
 
@@ -255,7 +254,7 @@ const forExport = {
       log.logVerbose('srdb.fetchUserByID: Received ' + result.rows.length + ' rows');
     } catch(e) {
       log.logError('srdb.fetchUserByID: Error querying database - ' + qry + ' || ' + e.message);
-      return ['We ran into an error while fetching announcements. Sorry.'];
+      return {};
     }
     let rows = result.rows;
     let u = {};
