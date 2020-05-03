@@ -368,7 +368,7 @@ const forExport = {
     }
     let rows = result.rows;
     let keys = {};
-    if (rows.length > 1) {
+    if (rows.length > 0) {
       for (let i = 0, l = rows.length; i < l; i++) {
         keys[rows[i].keyword] = rows[i].rating;
       }
