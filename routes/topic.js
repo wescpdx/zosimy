@@ -47,6 +47,7 @@ router.get('/edit/:id', function(req, res) {
 router.get('/:id', function(req, res) {
   log.logVerbose('topic.get: Entering router for id '+req.params.id);
   srdb.fetchTopic(req.params.id, req.user).then(function(content_array) {
+    log.logVerbose('topic.get: content_array = ' + JSON.stringify(content_array));
     res.render(req.user.admin ? 'topicadmin' : 'topic', {
       display_name: content_array[0].display_name,
       content_array: content_array,
