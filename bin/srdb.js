@@ -317,7 +317,7 @@ const forExport = {
         "ON tt.topic_id = ta.topic_id " +
         "JOIN rules AS tr " +
         "ON tr.article_id = ta.article_id " +
-        "WHERE ta.article_guid = '" + artid + "'";
+        "WHERE ta.article_id = '" + artid + "'";
     let result = [];
     try {
       result = await _srdb.pg(qry);
