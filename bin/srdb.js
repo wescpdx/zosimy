@@ -12,6 +12,7 @@ const _srdb = {
     return (new Date().getTime()) + '-' + 'fake-guid';
   },
   pg: async function(qry) {
+    let result = [];
     try {
       let client = new Client({
         connectionString: process.env.DATABASE_URL,
@@ -20,12 +21,20 @@ const _srdb = {
       await client.connect();
       log.logInfo('srdb.pg: Connected to database');
       log.logVerbose('srdb.pg: Issuing query: ' + qry);
-      let result = await client.query(qry);
+      result = await client.query(qry);
       log.logVerbose('srdb.pg: Fetched ' + result.rows.length + ' rows');
       client.end();
       return result;
     } catch(e) {
       log.logError('srdb.pg: Error connecting to DB:' + e.message);
+    }
+  },
+  satisfyRule: function(usr, rule) {
+    // TODO: Implement actual rule checking
+    if (usr.admin) {
+      return true;
+    } else {
+      return false;
     }
   },
 };
@@ -111,6 +120,7 @@ const forExport = {
     try {
       result = await _srdb.pg(qry);
       log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
     } catch(e) {
       log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
       return null;
@@ -163,6 +173,7 @@ const forExport = {
         "VALUES ('" + u.playername + "','" + u.charname + "','" + u.email + "', false, false) " +
         "RETURNING user_id";
     log.logVerbose('srdb.addUser: qry = ' + qry);
+    let result = [];
     try {
       result = await _srdb.pg(qry);
       log.logVerbose('srdb.addUser: Affected ' + result.rowCount + ' rows');
@@ -189,87 +200,46 @@ const forExport = {
     }
   },
 
-  fetchTopic: function(topic, usr) {
-    return new Promise(function(resolve, reject) {
-      let qry, art = {};
-      // Input validation
-      if (valid.path(topic)) {
-        topic = valid.path(topic);
-      } else {
-        throw ('Invalid topic: ' + topic);
-      }
-
-      // Query for article data
-      log.logVerbose('srdb.fetchTopic: Fetching article data');
-      if (usr === 'admin') {
-        qry = 'SELECT tt.title, ta.article_guid, ta.content, tk.keyword '
-        + 'FROM topic_data.topics AS tt '
-        + 'JOIN topic_data.articles AS ta '
-        + 'ON tt.path = ta.topic_path '
-        + 'JOIN topic_data.aliases AS tal '
-        + 'ON tt.path = tal.topic_path '
-        + 'JOIN topic_data.keywords AS tk '
-        + 'ON tk.article_guid = ta.article_guid '
-        + 'WHERE tal.alias = "' + topic + '"';
-      } else {
-        qry = 'SELECT tt.title, ta.article_guid, ta.content, tk.keyword'
-        + ' FROM user_data.keywords AS uk'
-        + ' JOIN  topic_data.keywords AS tk'
-        + ' ON uk.keyword = tk.keyword'
-        + ' JOIN topic_data.articles AS ta'
-        + ' ON tk.article_guid = ta.article_guid'
-        + ' JOIN topic_data.topics AS tt'
-        + ' ON ta.topic_path = tt.path'
-        + ' JOIN topic_data.aliases AS tal'
-        + ' ON tt.path = tal.topic_path'
-        + ' WHERE uk.user_guid = "' + usr.uid + '"'
-        + 'AND tal.alias = "' + topic + '"';
-      }
-      log.logVerbose('srdb.fetchTopic: qry = ' + qry);
-      bqClient.query(qry).then(function(res) {
-        let rows, articles = [];
-        log.logVerbose('srdb.fetchTopic: res stringify: '+JSON.stringify(res));
-        rows = res[0];
-        log.logVerbose('srdb.fetchTopic: rows = '+JSON.stringify(rows));
-        log.logVerbose('srdb.fetchTopic: rows has ' + rows.length + ' rows');
-        if (rows.length > 0) {
-          let guids = {}, guidlist = [];
-          art.title = rows[0].title;
-          art.articles = [];
-          for (let aa=0, len = rows.length; aa < len; aa++) {
-            if (guids[rows[aa].article_guid]) {
-              log.logInfo('srdb.fetchTopic: Duplicate article - adding keyword');
-              guids[rows[aa].article_guid].keyword.push([rows[aa].keyword]);
-            } else {
-              log.logVerbose('srdb.fetchTopic: Adding article');
-              guidlist.push(rows[aa].article_guid);
-              guids[rows[aa].article_guid] = {
-                guid: rows[aa].article_guid,
-                content: rows[aa].content,
-                keyword: [rows[aa].keyword]
-              }
-            }
+  fetchTopic: async function(topic, usr) {
+    // Input validation
+    if (valid.path(topic)) {
+      topic = valid.path(topic);
+    } else {
+      throw ('Invalid topic string: ' + topic);
+    }
+    let qry = "SELECT tt.display_name, ta.article_id, ta.content, tr.rule " +
+          "FROM topics AS tt " +
+          "JOIN articles AS ta " +
+          "ON tt.topic_id = ta.topic_id " +
+          "JOIN rules AS tr " +
+          "ON tr.article_id = ta.article_id " +
+          "WHERE tt.title = '" + topic + "'";
+    let result = [];
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.fetchTopic: Received ' + result.rows.length + ' rows');
+      log.logVerbose('srdb.fetchTopic: Received ' + result.rows.length + ' rows');
+    } catch(e) {
+      log.logError('srdb.fetchTopic: Error querying database - ' + qry + ' || ' + e.message);
+      return [];
+    }
+    let rows = result.rows;
+    let visibles = {};
+    let output = [];
+    if (rows.length > 0) {
+      for (let i = 0, l = rows.length; i < l; i++) {
+        let thisRow = rows[i];
+        if (_srdb.satisfyRule(usr, thisRow.rule)) {
+          if (!visibles[thisRow.article_id]) {
+            visibles[thisRow.article_id] = true;
+            output.push(thisRow);
           }
-          // Compile articles into array
-          for (let aa=0, len = guidlist.length; aa < len; aa++) {
-            art.articles.push(guids[guidlist[aa]]);
-          }
-          resolve(art);
-        } else {
-          log.logWarning('srdb.fetchTopic: No articles found');
-          art.title = 'No Information Available';
-          art.articles = [{
-            guid: 'none',
-            content: 'Your character does not know any special information on this topic.',
-            keyword: 'none'
-          }]
         }
-        resolve(art);
-      }).catch(function(err) {
-        log.logError('srdb.fetchTopic: Executing failure condition');
-        log.logError('srdb.fetchTopic: Error: '+err);
-      });
-    });
+      } 
+    } else {
+      log.logWarning('srdb.fetchTopic: No articles for this topic');
+    }
+    return output;
   },
 
   fetchUserByID: async function(uid) {
@@ -305,7 +275,7 @@ const forExport = {
     }
     return u;
   },
-
+/**
   updateArticle: function(artid, content) {
     let qry;
     return new Promise(function(resolve, reject) {
@@ -323,8 +293,8 @@ const forExport = {
       }
 
       // Post new article data
-      qry = 'UPDATE topic_data.articles SET content = "' + content + '"'
-      + 'WHERE article_guid = "' + artid + '"';
+      qry = 'UPDATE topic_data.articles SET content = "' + content + '"' +
+          'WHERE article_guid = "' + artid + '"';
 
       bqClient.query(qry).then(function(res) {
         log.logVerbose('srdb.updateArticle: Update query returned: ' + JSON.stringify(res));
@@ -372,7 +342,7 @@ const forExport = {
             guid: rows[0].article_guid,
             content: rows[0].content,
             keywords: [rows[0].keyword]
-          }
+          };
           if (rows.length > 1) {
             for (let aa=1, len = rows.length; aa < len; aa++) {
               article.keywords.push(rows[aa].keyword);
@@ -386,7 +356,7 @@ const forExport = {
             guid: 'None',
             content: 'Empty',
             keywords: []
-          }
+          };
         }
         log.logVerbose('srdb.fetchArticle: Returning article: ' + JSON.stringify(art));
         resolve(article);
@@ -396,9 +366,9 @@ const forExport = {
       });
     });
   },
-
+**/
   fetchUserKeywords: async function(uid) {
-      qry = "SELECT keyword" +
+    let qry = "SELECT keyword" +
           " FROM user_keywords WHERE user_id = " + uid;
     let result = [];
     try {
@@ -409,6 +379,7 @@ const forExport = {
       return null;
     }
     let rows = result.rows;
+    let keys = [];
     if (rows.length > 1) {
       for (let i = 0, l = rows.length; i < l; i++) {
         keys.push(rows[i].keyword);
@@ -417,7 +388,7 @@ const forExport = {
       log.logInfo('srdb.fetchUserKeywords: No keywords found');
       return [];
     }
-    resolve(keys);
+    return keys;
   },
 
 };

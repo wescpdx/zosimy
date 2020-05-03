@@ -1,0 +1,21 @@
+extends layout
+block content
+  h1= title
+    p
+
+    form(action='/topic/edit/updatearticle/'+guid method='post')
+      label(for='content')
+      textarea(id='content' name='content' cols=90 rows=16) #{acontent}
+
+      br 
+      input(type='submit' value='Update')
+
+    p 
+
+    if keywords
+      ul
+      each key in keywords
+        li #{key}
+    
+
+

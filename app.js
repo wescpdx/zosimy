@@ -44,10 +44,10 @@ passport.use(new StrategyGoogle(
     log.logVerbose('app.passport: Access passport function');
     //process.nextTick(function() {
       log.logInfo('app.passport: Trying to authorize Google ID ' + profile.id);
-      let authy = srdb.fetchUserByAuth('google', profile.id).then(function(uid) {
-        log.logVerbose('app.passport: u = ' + JSON.stringify(uid));
-        log.logVerbose('app.passport: u.id = ' + JSON.stringify(uid));
-        return done(null, uid);
+      let authy = srdb.fetchUserByAuth('google', profile.id).then(function(usr) {
+        log.logVerbose('app.passport: u = ' + JSON.stringify(usr));
+        log.logVerbose('app.passport: u.id = ' + JSON.stringify(usr));
+        return done(null, usr);
       });
     //});
   }
