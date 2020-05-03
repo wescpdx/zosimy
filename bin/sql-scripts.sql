@@ -57,7 +57,7 @@ INSERT INTO topics (topic_id, title, display_name) VALUES
 CREATE TABLE articles (
   article_id SERIAL,
   topic_id INTEGER,
-  content TEXT
+  content TEXT,
   PRIMARY KEY (article_id)
 );
 CREATE UNIQUE INDEX titles ON topics (title);

@@ -309,68 +309,42 @@ const forExport = {
       });
     });
   },
-
-  fetchArticle: function(artid) {
-    let qry, art;
-    log.logVerbose('srdb.fetchArticle: Executing');
-    return new Promise(function(resolve, reject) {
-      let qry, art = {};
-      // Input validation
-      if (valid.sqlString(artid)) {
-        artid = valid.sqlString(artid);
-      } else {
-        throw ('Invalid artid: ' + artid);
-      }
-
-      // Query for article data
-      log.logVerbose('srdb.fetchArticle: Fetching article data');
-      qry = 'SELECT tt.title, ta.article_guid, ta.content, tk.keyword '
-      + 'FROM topic_data.topics AS tt '
-      + 'JOIN topic_data.articles AS ta '
-      + 'ON tt.path = ta.topic_path '
-      + 'JOIN topic_data.keywords AS tk '
-      + 'ON tk.article_guid = ta.article_guid '
-      + 'WHERE ta.article_guid = "' + artid + '"';
-      
-      log.logVerbose('srdb.fetchArticle: qry = ' + qry);
-      bqClient.query(qry).then(function(res) {
-        let rows, article;
-        log.logVerbose('srdb.fetchArticle: res stringify: '+JSON.stringify(res), 10);
-        rows = res[0];
-        log.logVerbose('srdb.fetchArticle: rows = '+JSON.stringify(rows), 10);
-        log.logVerbose('srdb.fetchArticle: rows has ' + rows.length + ' rows', 9);
-        if (rows.length > 0) {
-          article = {
-            title: rows[0].title,
-            topic: rows[0].title,
-            guid: rows[0].article_guid,
-            content: rows[0].content,
-            keywords: [rows[0].keyword]
-          };
-          if (rows.length > 1) {
-            for (let aa=1, len = rows.length; aa < len; aa++) {
-              article.keywords.push(rows[aa].keyword);
-            }
-          }
-        } else {
-          log.logInfo('srdb.fetchArticle: No article found');
-          article = {
-            title: 'No article found',
-            topic: 'No article found',
-            guid: 'None',
-            content: 'Empty',
-            keywords: []
-          };
-        }
-        log.logVerbose('srdb.fetchArticle: Returning article: ' + JSON.stringify(art));
-        resolve(article);
-      }).catch(function(err) {
-        log.logError('srdb.fetchArticle: Executing failure condition');
-        log.logError('srdb.fetchArticle: Error: '+err);
-      });
-    });
-  },
 **/
+  fetchArticle: async function(artid) {
+    let qry = "SELECT tt.title, tt.display_name, ta.article_id, ta.content, tr.rule " +
+        "FROM topics AS tt " +
+        "JOIN articles AS ta " +
+        "ON tt.topic_id = ta.topic_id " +
+        "JOIN rules AS tr " +
+        "ON tr.article_id = ta.article_id " +
+        "WHERE ta.article_guid = '" + artid + "'";
+    let result = [];
+    try {
+      result = await _srdb.pg(qry);
+      log.logVerbose('srdb.fetchArticle: Received ' + result.rows.length + ' rows');
+    } catch(e) {
+      log.logError('srdb.fetchArticle: Error querying database - ' + qry + ' || ' + e.message);
+      return {};
+    }
+    let rows = result.rows;
+    let article = {};
+    if (rows.length > 0) {
+      article = {
+        title: rows[0].title,
+        topic: rows[0].display_name,
+        guid: rows[0].article_id,
+        content: rows[0].content,
+        rules: [rows[0].rule]
+      };
+      if (rows.length > 1) {
+        for (let aa = 1, len = rows.length; aa < len; aa++) {
+          article.rules.push(rows[aa].rule);
+        }
+      }
+    }
+    return article;
+  },
+
   fetchUserKeywords: async function(uid) {
     let qry = "SELECT keyword" +
           " FROM user_keywords WHERE user_id = " + uid;

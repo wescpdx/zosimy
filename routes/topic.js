@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/edit/updatearticle/:id', function(req,res) {
-  log.logVerbose('topic.edit.post: Posting update for article guid ' + req.params.id);
+  log.logVerbose('topic.edit.post: Posting update for article id ' + req.params.id);
   if (req.user.admin) {
     log.logVerbose('topic.edit.post: req.body = ' + JSON.stringify(req.body), 10);
     srdb.updateArticle(req.params.id, req.body.content).then(function(data) {
@@ -34,7 +34,7 @@ router.get('/edit/:id', function(req, res) {
       res.render('edit_article', {
         title: article.title,
         topic: article.title,
-        guid: article.guid,
+        id: article.article_id,
         acontent: article.content,
         keywords: article.keywords
       });
