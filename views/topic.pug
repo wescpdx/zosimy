@@ -1,7 +1,7 @@
 extends layout
 block content
   h1= display_name
-  if articles
+  if content_array
     p Information known to #{charName} about "#{display_name}":
     each article in content_array
       .articlecontainer
