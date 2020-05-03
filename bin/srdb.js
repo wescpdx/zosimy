@@ -230,10 +230,13 @@ const forExport = {
       for (let i = 0, l = rows.length; i < l; i++) {
         let thisRow = rows[i];
         if (_srdb.satisfyRule(usr, thisRow.rule)) {
+          log.logVerbose('srdb.fetchTopic: Rule satisfied for article_id ' + thisRow.article_id);
           if (!visibles[thisRow.article_id]) {
             visibles[thisRow.article_id] = true;
             output.push(thisRow);
           }
+        } else {
+          log.logVerbose('srdb.fetchTopic: Rule failed for article_id ' + thisRow.article_id);
         }
       } 
     } else {
