@@ -5,8 +5,8 @@ block content
     p Character: #{charname}
     p Qualities:
      ul
-      if keywords
-        each key in keywords
-          li= key
+      if qualities
+        each val, key in qualities
+          li= key - val
       else
         | No qualities associated with your character at this time

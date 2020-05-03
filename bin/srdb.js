@@ -142,23 +142,8 @@ const forExport = {
         email: rows[0].email,
         active: rows[0].active,
         admin: rows[0].admin,
-        qualities: {}
+        qualities: forExport.fetchUserKeywords(rows[0].user_id)
       };
-      qry = "SELECT keyword, rating FROM user_keywords WHERE user_id = " + u.uid;
-      result = [];
-      try {
-        result = await _srdb.pg(qry);
-        log.logVerbose('srdb.fetchUserByAuth: Received ' + result.rows.length + ' rows');
-      } catch(e) {
-        log.logError('srdb.fetchUserByAuth: Error querying database - ' + qry + ' || ' + e.message);
-        result = [];
-      }
-      rows = result.rows;
-      if (rows.length > 0) {
-        for (let i = 0, l = rows.length; i < l; i++) {
-          u.qualities[rows[i].keyword] = rows[i].rating;
-        }
-      }
     } else {
       log.logError('srdb.fetchUserByAuth: ERROR - Duplicate auth record');
       throw('Duplicate auth record ' + provider + '//' + key + ' Found in users table');
@@ -356,7 +341,7 @@ const forExport = {
   },
 
   fetchUserKeywords: async function(uid) {
-    let qry = "SELECT keyword" +
+    let qry = "SELECT keyword, rating " +
           " FROM user_keywords WHERE user_id = " + uid;
     let result = [];
     try {
@@ -376,6 +361,7 @@ const forExport = {
       log.logInfo('srdb.fetchUserKeywords: No keywords found');
       return {};
     }
+    log.logVerbose('srdb.fetchUserKeywords: Returning ' + JSON.stringify(keys));
     return keys;
   },
 
