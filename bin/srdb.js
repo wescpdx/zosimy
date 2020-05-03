@@ -242,6 +242,7 @@ const forExport = {
     } else {
       log.logWarning('srdb.fetchTopic: No articles for this topic');
     }
+    log.logVerbose('srdb.fetchTopic: Output = ' + JSON.stringify(output));
     return output;
   },
 
