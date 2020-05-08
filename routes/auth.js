@@ -11,6 +11,7 @@ router.get('/', function(req, res) {
   } else {
     res.render('auth', {
       title: 'Login',
+      auth: req.user.uid ? true : false,
       user: srauth.usernameExpress(req)
     });
   }

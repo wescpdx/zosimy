@@ -10,7 +10,8 @@ log.setModule('admin');
 /* GET */
 router.get('/', function(req, res, next) {
   res.render('admin', { 
-    title: 'Admin Panel', 
+    title: 'Admin Panel',
+    auth: req.user.uid ? true : false,    
     version: util.appVersion
   });
 });

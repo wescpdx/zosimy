@@ -12,18 +12,24 @@ router.get('/', function(req, res) {
     log.logInfo('createuser.new: Starting req.user.new');
     log.logVerbose('createuser.new: With user data = ' + JSON.stringify(req.user));
     res.render('create_new', {
+      title: 'New User',
+      auth: true,
       user: req.user.playername
     });
   } else if (req.user.active) {
     log.logInfo('createuser.active: Starting req.user.active');
     log.logVerbose('createuser.active: With user data = ' + JSON.stringify(req.user));
     res.render('create_exists', {
+      title: 'User Exists',
+      auth: true,
       user: req.user.playername
     });
   } else {
     log.logInfo('createuser.pending: Starting req.user.pending');
     log.logVerbose('createuser.pending: With user data = ' + JSON.stringify(req.user));
     res.render('create_pending', {
+      title: 'User Pending',
+      auth: true,
       user: req.user.playername
     });
   }

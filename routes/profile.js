@@ -11,6 +11,7 @@ router.get('/', function(req, res) {
   log.logVerbose('profile: req.user = ' + JSON.stringify(req.user));
   res.render('profile', {
     title: 'User Profile',
+    auth: req.user.uid ? true : false,
     user: req.user.playername,
     charname: req.user.charname,
     qualities: req.user.qualities

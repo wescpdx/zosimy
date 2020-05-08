@@ -6,7 +6,10 @@ const util = require('../bin/srutils');
 /* GET page. */
 router.get('/', function(req, res, next) {
   log.setFunction('GET /');
-  res.render('tos', { title: 'Seven Roses', version: util.appVersion });
+  res.render('tos', { 
+    title: 'Terms of Service', 
+    auth: req.user.uid ? true : false,
+  });
 });
 
 module.exports = router;
