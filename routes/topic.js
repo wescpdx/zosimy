@@ -3,6 +3,7 @@ var router = express.Router();
 var srdb = require('../bin/srdb');
 var srauth = require('../bin/srauth');
 var log = require('../bin/logger');
+const util = require('../bin/srutils');
 
 router.use(srauth.loginOnlyExpress);
 router.use(srauth.activeOnlyExpress);

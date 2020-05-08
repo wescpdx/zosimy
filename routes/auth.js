@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const srauth = require('../bin/srauth');
 const log = require('../bin/logger');
+const util = require('../bin/srutils');
 
 router.get('/', function(req, res) {
   if (req.isAuthenticated()) {
