@@ -11,7 +11,7 @@ log.setModule('admin');
 router.get('/', function(req, res, next) {
   res.render('admin', { 
     title: 'Admin Panel',
-    auth: req.user.uid ? true : false,    
+    auth: util.isLoggedIn(req),
     version: util.appVersion
   });
 });

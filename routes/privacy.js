@@ -8,8 +8,7 @@ router.get('/', function(req, res, next) {
   log.setFunction('GET /');
   res.render('privacy', { 
     title: 'Privacy Policy',
-    auth: req.user.uid ? true : false,    
-    version: util.appVersion 
+    auth: util.isLoggedIn(req)
   });
 });
 

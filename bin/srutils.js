@@ -2,8 +2,8 @@
 const utilities = {
   appVersion: '0.01',
 
-  getVersion: function() {
-    return this.appVersion;
+  isLoggedIn: function(req) {
+    return req.user && req.user.uid ? true : false;
   }
 
 };

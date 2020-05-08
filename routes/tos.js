@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
   log.setFunction('GET /');
   res.render('tos', { 
     title: 'Terms of Service', 
-    auth: req.user.uid ? true : false,
+    auth: util.isLoggedIn(req)
   });
 });
 
