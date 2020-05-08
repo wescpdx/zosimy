@@ -8,5 +8,8 @@ html
     block content
   footer
     span 
-      a(href="/auth/logout") Logout 
+      if auth
+        a(href="/auth/logout") Logout
+      else
+         a(href="/auth") Login
     span App version: 0.002
