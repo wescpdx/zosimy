@@ -8,7 +8,7 @@ const util = require('../bin/srutils');
 router.get('/', function(req, res, next) {
   var announcement = srdb.fetchAnnounce(null).then(function(rows){
     res.render('index', { 
-      title: 'Seven Roses Home', 
+      title: 'Home', 
       auth: req.user.uid ? true : false,
       announce: rows
     });

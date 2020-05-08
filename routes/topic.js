@@ -9,7 +9,7 @@ router.use(srauth.activeOnlyExpress);
 
 router.get('/', function(req, res) {
   res.render('topichome', {
-    title: Seven Roses,
+    title: 'Database',
     auth: true,
     userName: req.user.playername
   });
