@@ -10,7 +10,7 @@ a {
 footer > * {
   margin-right: 5px;
   margin-left: 5px;
-  position: float;
+  position: relative;
   left: 0;
 }
 
