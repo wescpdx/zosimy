@@ -129,10 +129,12 @@ const forExport = {
       log.logInfo('srdb.fetchUserByAuth: Blank new user record');
       u = {
         new: true,
+        active: false,
         uid: 'pending',
         provider: provider,
         pkey: key
       };
+    } else if (rows.length === 1) {
     } else if (rows.length === 1) {
       log.logInfo('srdb.fetchUserByAuth: Found user: ' + rows[0].player_name);
       u = {
@@ -188,7 +190,7 @@ const forExport = {
     // Create user auth record
     log.logVerbose('srdb.addUser: Ready to create user auth');
     qry = "INSERT INTO user_auth (user_id, provider, key) " +
-        "VALUES ('" + newUserId + "', '" + u.provider + "', '" + u.key + "')";
+        "VALUES ('" + newUserId + "', '" + u.provider + "', '" + u.pkey + "')";
     log.logVerbose('srdb.addUser: qry = ' + qry);
     try {
       result = await _srdb.pg(qry);
@@ -197,6 +199,8 @@ const forExport = {
       log.logError('srdb.addUser: Error querying database - ' + qry + ' || ' + e.message);
       return null;
     }
+    u.new = false;
+    return u;
   },
 
   fetchTopic: async function(topic, usr) {
