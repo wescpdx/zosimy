@@ -11,7 +11,7 @@ footer > * {
   margin-right: 5px;
   margin-left: 5px;
   position: relative;
-  left: 0;
+  bottom: 0;
 }
 
 .articlecontainer {
