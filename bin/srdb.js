@@ -135,7 +135,6 @@ const forExport = {
         pkey: key
       };
     } else if (rows.length === 1) {
-    } else if (rows.length === 1) {
       log.logInfo('srdb.fetchUserByAuth: Found user: ' + rows[0].player_name);
       u = {
         uid: rows[0].user_id,
