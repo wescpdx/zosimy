@@ -7,6 +7,10 @@ a {
   color: #00B7FF;
 }
 
+footer > * {
+  padding: 5px
+}
+
 .articlecontainer {
   width: 80%;
   margin-top: 20px
