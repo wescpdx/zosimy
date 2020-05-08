@@ -7,7 +7,11 @@ const util = require('../bin/srutils');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var announcement = srdb.fetchAnnounce(null).then(function(rows){
-    res.render('index', { title: 'Seven Roses', announce: rows, version: util.appVersion });
+    res.render('index', { 
+      title: 'Seven Roses Home', 
+      auth: req.user.uid ? true : false,
+      announce: rows
+    });
   });
 });
 
