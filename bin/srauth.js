@@ -16,7 +16,7 @@ var srauth = {
   // If not an active user, bounce to /create
   activeOnlyExpress: function(req, res, next) {
     if (!req.user.active) {
-      log.logVerbose('srauth.activeOnlyExpress: Active user failed - user info = ' + JSON.stringify(req.user));
+      log.logVerbose('srauth.activeOnlyExpress: User not active - user info = ' + JSON.stringify(req.user));
       res.redirect('/create');
     } else {
       log.logVerbose('srauth.activeOnlyExpress: Active user passed');

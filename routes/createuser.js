@@ -41,7 +41,7 @@ router.post('/confirm', function(req, res) {
     log.logInfo('createuser.confirm: Adding user from ' + JSON.stringify(u));
     srdb.addUser(u).then(function(u2) {
       req.user = u2;
-      log.logVerbose('createuser.confirm: User added, bouncing to /topic');
+      log.logVerbose('createuser.confirm: User added, bouncing to /topic - user now = ' + JSON.stringify(req.user));
       res.redirect('/topic');
     }).catch(function(err) {
       log.logError('createuser.confirm: Error adding user: ' + err.message);
