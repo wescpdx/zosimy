@@ -7,11 +7,16 @@ a {
   color: #00B7FF;
 }
 
+footer {
+  position: relative;
+  bottom: 0px;
+  width: 100%;
+}
+
 footer > * {
   margin-right: 5px;
   margin-left: 5px;
   position: relative;
-  float: both
 }
 
 .articlecontainer {
