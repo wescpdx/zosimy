@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
   var announcement = srdb.fetchAnnounce(null).then(function(rows){
     res.render('index', { 
       title: 'Home', 
-      auth: req.user.uid ? true : false,
+      auth: req.user && req.user.uid ? true : false,
       announce: rows
     });
   });
