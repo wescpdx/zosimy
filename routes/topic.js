@@ -57,7 +57,7 @@ router.get('/:id', function(req, res) {
     res.render(req.user.admin ? 'topicadmin' : 'topic', {
       title: 'Topic: ' + req.params.id,
       auth: true,
-      display_name: content_array[0].display_name,
+      display_name: req.params.id,
       content_array: content_array,
       charName: req.user.charname
     });
