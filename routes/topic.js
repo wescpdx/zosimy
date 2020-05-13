@@ -16,14 +16,15 @@ router.get('/', function(req, res) {
   });
 });
 
-router.post('/edit/updatearticle/:id', function(req,res) {
+router.post('/edit/updatearticle/:id', function(req, res) {
   log.logVerbose('topic.edit.post: Posting update for article id ' + req.params.id);
   if (req.user.admin) {
     log.logVerbose('topic.edit.post: req.body = ' + JSON.stringify(req.body), 10);
     srdb.updateArticle(req.params.id, req.body.content).then(function(data) {
       res.render('edit_confirm', {
         title: data ? 'Article Successfully Updated' : 'Article Update Failed',
-        auth: true
+        auth: true,
+        topic: req.params.id
       });
     });
   } else {
@@ -50,11 +51,11 @@ router.get('/edit/:id', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  log.logVerbose('topic.get: Entering router for id '+req.params.id);
+  log.logVerbose('topic.get: Entering router for id ' + req.params.id);
   srdb.fetchTopic(req.params.id, req.user).then(function(content_array) {
     log.logVerbose('topic.get: content_array = ' + JSON.stringify(content_array));
     res.render(req.user.admin ? 'topicadmin' : 'topic', {
-      title: 'Topic: ' + content_array[0].display_name,
+      title: 'Topic: ' + req.params.id,
       auth: true,
       display_name: content_array[0].display_name,
       content_array: content_array,
