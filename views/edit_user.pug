@@ -5,19 +5,19 @@ block content
 
     form(action='/user/edit/updateuser/'+id method='post')
       label(for='player') Player Name
-      input(type='text' id='player' name='player' value=#{player_name})
+      input(type='text' id='player' name='player' value='#{player_name}')
       br
       label(for='char') Character Name
-      input(type='text' id='char' name='char' value=#{char_name})
+      input(type='text' id='char' name='char' value='#{char_name}')
       br
       label(for='email') Email
-      input(type='text' id='email' name='email' value=#{email})
+      input(type='text' id='email' name='email' value='#{email}')
       br
       label(for='active') Active
-      input(type='checkbox' id='active' name='active' value=#{active})
+      input(type='checkbox' id='active' name='active' value='#{active}')
       br
       label(for='admin') Admin
-      input(type='checkbox' id='admin' name='admin' value=#{admin})
+      input(type='checkbox' id='admin' name='admin' value='#{admin}')
       br 
       input(type='submit' value='Update')
 
