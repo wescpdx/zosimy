@@ -250,7 +250,7 @@ const forExport = {
 
   fetchUserByID: async function(uid) {
     let qry = "SELECT user_id, player_name, char_name, email, active, admin " +
-        "FROM user_data.users WHERE user_id = '" + uid + "'";
+        "FROM users WHERE user_id = '" + uid + "'";
     let result = [];
     try {
       result = await _srdb.pg(qry);
